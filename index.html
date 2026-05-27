@@ -105,12 +105,14 @@
         /* 고정 헤더행: 범례 아래, 스크롤 밖 고정 */
         .gantt-fixed-header {
             display: flex;
-            flex-shrink: 0;
             height: 48px;
             border-bottom: 2px solid var(--border-color);
-            background-color: #f1f5f9;
-            overflow: hidden; /* 가로 스크롤바 숨김, JS로 동기화 */
-        }
+       		background-color: #f1f5f9;
+  		  /* 추가/변경 레이아웃 */
+   			 position: sticky;
+   			 top: 0;
+   			 z-index: 100; /* 데이터 행보다 위에 보이도록 */
+   			 width: 100%;        }
         .gantt-fixed-header-label {
             width: 280px;
             min-width: 280px;
@@ -126,7 +128,7 @@
         .gantt-fixed-header-months {
             flex: 1;
             position: relative;
-            overflow: hidden;
+            overflow: 100%;
         }
 
         /* gantt-header-row는 더 이상 사용 안 함 */
