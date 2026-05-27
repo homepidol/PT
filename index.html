@@ -6,80 +6,147 @@
     <title>Pump Tower & L/D Cover 공정 모니터링 시스템</title>
     <style>
         :root {
-            --bg-color: #f1f5f9; --card-color: #ffffff; --text-main: #0f172a; --text-sub: #475569;
+            --bg-color: #f1f5f9;
+            --card-color: #ffffff; --text-main: #0f172a; --text-sub: #475569;
             --text-muted: #94a3b8; --border-color: #cbd5e1; --primary: #0f172a; --primary-hover: #1e293b;
-            --accent: #2563eb; --accent-hover: #1d4ed8; --danger: #ef4444; --danger-hover: #dc2626;
+            --accent: #2563eb; --accent-hover: #1d4ed8; --danger: #ef4444;
+            --danger-hover: #dc2626;
             --success: #10b981; --warning: #f59e0b; --radius-lg: 12px; --radius-md: 8px;
             --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
             --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
             --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.5; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        * { box-sizing: border-box; margin: 0; padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.5; height: 100vh; overflow: hidden;
+            display: flex; flex-direction: column; }
 
-        header { background-color: var(--card-color); border-bottom: 2px solid var(--border-color); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
-        .header-container { max-width: 1600px; margin: 0 auto; padding: 0 24px; height: 70px; display: flex; align-items: center; justify-content: space-between; }
-        .logo-title h1 { font-size: 18px; font-weight: 900; letter-spacing: -0.5px; }
-        .logo-title p { font-size: 11px; color: var(--text-sub); font-weight: 600; }
-        .header-controls { display: flex; align-items: center; gap: 12px; }
-        .date-badge { background-color: #fff1f2; color: #e11d48; border: 1px solid #ffe4e6; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
-        .pulse-dot { width: 8px; height: 8px; background-color: #e11d48; border-radius: 50%; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%,100% { transform: scale(0.9); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.5; } }
+        header { background-color: var(--card-color); border-bottom: 2px solid var(--border-color);
+            position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
+        .header-container { max-width: 1600px;
+            margin: 0 auto; padding: 0 24px; height: 70px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .logo-title h1 { font-size: 18px; font-weight: 900; letter-spacing: -0.5px;
+        }
+        .logo-title p { font-size: 11px; color: var(--text-sub); font-weight: 600;
+        }
+        .header-controls { display: flex; align-items: center; gap: 12px;
+        }
+        .date-badge { background-color: #fff1f2; color: #e11d48; border: 1px solid #ffe4e6;
+            padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 6px;
+        }
+        .pulse-dot { width: 8px; height: 8px; background-color: #e11d48; border-radius: 50%;
+            animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100% { transform: scale(0.9);
+            opacity: 1; } 50% { transform: scale(1.3); opacity: 0.5; } }
 
-        .btn { padding: 10px 20px; border-radius: var(--radius-md); font-size: 13px; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: var(--shadow-sm); }
-        .btn-dark { background-color: var(--primary); color: #fff; }
-        .btn-dark:hover { background-color: var(--primary-hover); }
-        .btn-danger { background-color: var(--danger); color: #fff; }
-        .btn-danger:hover { background-color: var(--danger-hover); }
-        .btn-accent { background-color: var(--accent); color: #fff; }
-        .btn-accent:hover { background-color: var(--accent-hover); }
-        .btn-light { background-color: #f1f5f9; color: var(--text-sub); border: 1px solid #cbd5e1; }
-        .btn-light:hover { background-color: #e2e8f0; }
+        .btn { padding: 10px 20px;
+            border-radius: var(--radius-md); font-size: 13px; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center;
+            gap: 6px; box-shadow: var(--shadow-sm); }
+        .btn-dark { background-color: var(--primary); color: #fff;
+        }
+        .btn-dark:hover { background-color: var(--primary-hover);
+        }
+        .btn-danger { background-color: var(--danger); color: #fff;
+        }
+        .btn-danger:hover { background-color: var(--danger-hover);
+        }
+        .btn-accent { background-color: var(--accent); color: #fff;
+        }
+        .btn-accent:hover { background-color: var(--accent-hover);
+        }
+        .btn-light { background-color: #f1f5f9; color: var(--text-sub); border: 1px solid #cbd5e1;
+        }
+        .btn-light:hover { background-color: #e2e8f0;
+        }
 
-        main { max-width: 1600px; width: 100%; margin: 0 auto; padding: 0 24px; display: flex; flex-direction: column; gap: 0; flex-grow: 1; overflow: hidden; }
+        main { max-width: 1600px; width: 100%; margin: 0 auto; padding: 0 24px;
+            display: flex; flex-direction: column; gap: 0; flex-grow: 1; overflow: hidden;
+        }
 
-        .admin-section { display: none; background-color: var(--card-color); border: 2px solid var(--primary); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); overflow: hidden; flex-shrink: 0; margin: 0 0 16px 0; }
-        .admin-header { background-color: var(--primary); color: #fff; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-        .admin-header-title h2 { font-size: 15px; font-weight: 800; }
-        .admin-header-title p { font-size: 11px; color: var(--text-muted); }
-        .admin-header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .admin-section { display: none; background-color: var(--card-color); border: 2px solid var(--primary); border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg); overflow: hidden; flex-shrink: 0; margin: 0 0 16px 0;
+        }
+        .admin-header { background-color: var(--primary); color: #fff; padding: 16px 20px; display: flex;
+            align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+        .admin-header-title h2 { font-size: 15px;
+            font-weight: 800; }
+        .admin-header-title p { font-size: 11px; color: var(--text-muted);
+        }
+        .admin-header-actions { display: flex; gap: 8px; flex-wrap: wrap;
+        }
 
-        .admin-form { padding: 24px; display: grid; grid-template-columns: repeat(1, 1fr); gap: 16px; }
-        @media (min-width: 640px) { .admin-form { grid-template-columns: repeat(2, 1fr); } .full-width { grid-column: span 2; } }
-        @media (min-width: 1024px) { .admin-form { grid-template-columns: repeat(4, 1fr); } .full-width { grid-column: span 4; } }
+        .admin-form { padding: 24px; display: grid; grid-template-columns: repeat(1, 1fr); gap: 16px;
+        }
+        @media (min-width: 640px) { .admin-form { grid-template-columns: repeat(2, 1fr);
+        } .full-width { grid-column: span 2; } }
+        @media (min-width: 1024px) { .admin-form { grid-template-columns: repeat(4, 1fr);
+        } .full-width { grid-column: span 4; } }
 
-        .form-group { display: flex; flex-direction: column; gap: 6px; }
-        .form-group label { font-size: 11px; font-weight: 800; color: var(--text-sub); display: flex; align-items: center; gap: 6px; }
-        .form-group label .auto-tag { font-size: 9px; font-weight: 700; color: var(--success); background: #f0fdf4; border: 1px solid #86efac; border-radius: 4px; padding: 1px 5px; }
-        .form-group label .manual-tag { font-size: 9px; font-weight: 700; color: var(--text-muted); background: #f8fafc; border: 1px solid var(--border-color); border-radius: 4px; padding: 1px 5px; }
+        .form-group { display: flex;
+            flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 11px; font-weight: 800;
+            color: var(--text-sub); display: flex; align-items: center; gap: 6px; }
+        .form-group label .auto-tag { font-size: 9px;
+            font-weight: 700; color: var(--success); background: #f0fdf4; border: 1px solid #86efac; border-radius: 4px; padding: 1px 5px;
+        }
+        .form-group label .manual-tag { font-size: 9px; font-weight: 700; color: var(--text-muted); background: #f8fafc;
+            border: 1px solid var(--border-color); border-radius: 4px; padding: 1px 5px; }
 
-        .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 13px; background-color: #f8fafc; outline: none; transition: border-color 0.15s, background-color 0.15s; }
-        .form-control:focus { border-color: var(--accent); background-color: #fff; }
-        .form-control.auto-calc { background-color: #f0fdf4; border-color: #86efac; color: #15803d; }
-        .form-control.auto-calc:focus { border-color: var(--success); }
+        .form-control { width: 100%;
+            padding: 10px 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 13px; background-color: #f8fafc; outline: none; transition: border-color 0.15s, background-color 0.15s;
+        }
+        .form-control:focus { border-color: var(--accent); background-color: #fff;
+        }
+        .form-control.auto-calc { background-color: #f0fdf4; border-color: #86efac; color: #15803d;
+        }
+        .form-control.auto-calc:focus { border-color: var(--success);
+        }
 
         /* 탑재일 강조 */
-        .form-control.mount-input { border-color: var(--accent); border-width: 2px; background-color: #eff6ff; font-weight: 700; }
-        .form-control.mount-input:focus { background-color: #fff; }
+        .form-control.mount-input { border-color: var(--accent);
+            border-width: 2px; background-color: #eff6ff; font-weight: 700; }
+        .form-control.mount-input:focus { background-color: #fff;
+        }
 
-        .calc-info-banner { grid-column: 1 / -1; background-color: #f0fdf4; border: 1px solid #86efac; border-radius: var(--radius-md); padding: 10px 14px; font-size: 11px; color: #15803d; font-weight: 700; }
+        .calc-info-banner { grid-column: 1 / -1; background-color: #f0fdf4; border: 1px solid #86efac;
+            border-radius: var(--radius-md); padding: 10px 14px; font-size: 11px; color: #15803d; font-weight: 700;
+        }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-        @media (min-width: 768px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
-        .stat-card { background-color: var(--card-color); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow-sm); }
-        .stat-label { font-size: 11px; font-weight: 700; color: var(--text-muted); }
-        .stat-value { font-size: 26px; font-weight: 900; margin-top: 4px; }
-        .stat-total { color: var(--text-main); } .stat-progress { color: var(--accent); } .stat-completed { color: var(--success); } .stat-pending { color: var(--warning); }
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+        }
+        @media (min-width: 768px) { .stats-grid { grid-template-columns: repeat(4, 1fr);
+        } }
+        .stat-card { background-color: var(--card-color); border: 1px solid var(--border-color); border-radius: var(--radius-lg);
+            padding: 16px; box-shadow: var(--shadow-sm); }
+        .stat-label { font-size: 11px; font-weight: 700; color: var(--text-muted);
+        }
+        .stat-value { font-size: 26px; font-weight: 900; margin-top: 4px;
+        }
+        .stat-total { color: var(--text-main); } .stat-progress { color: var(--accent);
+        } .stat-completed { color: var(--success); } .stat-pending { color: var(--warning);
+        }
 
-        .filter-bar { background-color: var(--card-color); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 16px 20px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 20px; }
-        @media (min-width: 1024px) { .filter-bar { flex-direction: row; align-items: center; justify-content: space-between; } }
-        .filter-left { display: flex; align-items: center; gap: 16px; flex-grow: 1; flex-wrap: wrap; }
-        .zoom-slider-container { display: flex; align-items: center; gap: 10px; background-color: #f1f5f9; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border-color); }
-        .zoom-slider-container label { font-size: 11px; font-weight: 800; color: var(--text-sub); white-space: nowrap; }
-        .zoom-slider { width: 160px; cursor: pointer; accent-color: var(--accent); }
-        .zoom-value { font-size: 11px; font-weight: 800; color: var(--accent); min-width: 45px; text-align: right; font-family: monospace; }
+        .filter-bar { background-color: var(--card-color); border: 1px solid var(--border-color); border-radius: var(--radius-lg);
+            padding: 16px 20px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 20px;
+        }
+        @media (min-width: 1024px) { .filter-bar { flex-direction: row; align-items: center; justify-content: space-between;
+        } }
+        .filter-left { display: flex; align-items: center; gap: 16px; flex-grow: 1;
+            flex-wrap: wrap; }
+        .zoom-slider-container { display: flex; align-items: center; gap: 10px; background-color: #f1f5f9;
+            padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border-color); }
+        .zoom-slider-container label { font-size: 11px;
+            font-weight: 800; color: var(--text-sub); white-space: nowrap; }
+        .zoom-slider { width: 160px; cursor: pointer;
+            accent-color: var(--accent); }
+        .zoom-value { font-size: 11px; font-weight: 800; color: var(--accent); min-width: 45px;
+            text-align: right; font-family: monospace; }
 
-        .gantt-board-wrapper { background-color: var(--card-color); border: 2px solid var(--border-color); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; display: flex; flex-direction: column; flex-grow: 1; margin-bottom: 16px; }
+        .gantt-board-wrapper { background-color: var(--card-color); border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; display: flex; flex-direction: column; flex-grow: 1; margin-bottom: 16px;
+        }
         .gantt-legend-panel {
             background-color: #f8fafc;
             border-bottom: 2px solid var(--border-color);
@@ -93,26 +160,28 @@
             color: var(--text-sub);
             flex-shrink: 0;
         }
-        .legend-title { color: var(--text-main); border-right: 2px solid var(--border-color); padding-right: 16px; }
-        .legend-item { display: flex; align-items: center; gap: 6px; }
-        .legend-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
-        .legend-diamond { width: 10px; height: 10px; background-color: #0d9488; transform: rotate(45deg); border: 1.5px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+        .legend-title { color: var(--text-main); border-right: 2px solid var(--border-color);
+            padding-right: 16px; }
+        .legend-item { display: flex; align-items: center; gap: 6px;
+        }
+        .legend-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+        .legend-diamond { width: 10px; height: 10px;
+            background-color: #0d9488; transform: rotate(45deg); border: 1.5px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
 
         /* ══════════════════════════════════════
-           간트 보드: 단일 스크롤 컨테이너 방식
+           [버그 수정] 간트 보드 헤더 CSS 수정
            ══════════════════════════════════════ */
-
-        /* 고정 헤더행: 범례 아래, 스크롤 밖 고정 */
         .gantt-fixed-header {
             display: flex;
             height: 48px;
             border-bottom: 2px solid var(--border-color);
-       		background-color: #f1f5f9;
-  		  /* 추가/변경 레이아웃 */
-   			 position: sticky;
-   			 top: 0;
-   			 z-index: 100; /* 데이터 행보다 위에 보이도록 */
-   			 width: 100%;        }
+            background-color: #f1f5f9;
+            /* 가로로 찌그러지지 않고 독립된 크기를 가지도록 수정 */
+            position: relative;
+            width: 100%;
+        }
         .gantt-fixed-header-label {
             width: 280px;
             min-width: 280px;
@@ -124,70 +193,38 @@
             font-weight: 900;
             border-right: 2px solid var(--border-color);
             background-color: #f1f5f9;
+            /* 스크롤 시 좌측 고정 효과 보완 */
+            position: sticky;
+            left: 0;
+            z-index: 40;
         }
         .gantt-fixed-header-months {
             flex: 1;
             position: relative;
-            overflow: visible;
+            /* 내부 자식(월들)이 가로 배율에 따라 바깥으로 확장될 수 있게 허용 */
+            overflow: visible; 
         }
 
-        /* gantt-header-row는 더 이상 사용 안 함 */
-        .gantt-header-row { display: none; }
-
-        /* 전체 래퍼: flex-grow로 남은 높이 자동 채움 */
         .gantt-outer {
             flex-grow: 1;
             overflow: auto;
             position: relative;
         }
 
-        /* 내부 테이블: 가로폭(zoom)에 따라 늘어남 */
         .gantt-inner {
             position: relative;
             min-height: 100%;
         }
 
-        /* ── 헤더 행: 세로 sticky ── */
-        .gantt-header-row {
-            position: sticky;
-            top: 0;
-            z-index: 30;
-            display: flex;
-            height: 48px;
-            border-bottom: 2px solid var(--border-color);
-            background-color: #f1f5f9;
-        }
-
-        /* 헤더 좌측 라벨 셀: 가로 sticky */
-        .gantt-header-label {
-            width: 280px;
-            min-width: 280px;
-            position: sticky;
-            left: 0;
-            z-index: 40;
-            background-color: #f1f5f9;
-            border-right: 2px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            padding: 0 16px;
-            font-size: 13px;
-            font-weight: 900;
-        }
-
-        /* 헤더 우측 월 표시 영역 */
-        .gantt-header-months {
-            flex: 1;
-            position: relative;
-        }
-
-        /* ── 데이터 행 ── */
+        /* 데이터 행 */
         .gantt-data-row {
             display: flex;
             height: 104px;
             border-bottom: 1px solid var(--border-color);
             background-color: #fff;
         }
-        .gantt-data-row:nth-child(even) { background-color: #fafbfc; }
+        .gantt-data-row:nth-child(even) { background-color: #fafbfc;
+        }
 
         /* 좌측 호선 정보: 가로 sticky */
         .gantt-row-label {
@@ -212,52 +249,98 @@
             height: 104px;
         }
 
-        .grid-month-block { position: absolute; height: 100%; border-left: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: var(--text-sub); background-color: #f8fafc; }
-        .gantt-vertical-gridlines { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
-        .grid-vertical-line { position: absolute; top: 0; bottom: 0; border-left: 1px dashed rgba(203,213,225,0.6); }
-        .gantt-today-vertical-bar { position: absolute; top: 0; bottom: 0; border-left: 2px dashed #ef4444; z-index: 25; pointer-events: none; }
-        .gantt-today-badge { position: absolute; top: 6px; transform: translateX(-50%); background-color: #ef4444; color: #fff; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+        .grid-month-block { position: absolute; height: 100%;
+            border-left: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: var(--text-sub); background-color: #f8fafc;
+        }
+        .gantt-vertical-gridlines { position: absolute; inset: 0; pointer-events: none; z-index: 5;
+        }
+        .grid-vertical-line { position: absolute; top: 0; bottom: 0; border-left: 1px dashed rgba(203,213,225,0.6);
+        }
+        .gantt-today-vertical-bar { position: absolute; top: 0; bottom: 0; border-left: 2px dashed #ef4444;
+            z-index: 25; pointer-events: none; }
+        .gantt-today-badge { position: absolute; top: 6px; transform: translateX(-50%);
+            background-color: #ef4444; color: #fff; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 4px; white-space: nowrap;
+        }
 
-        .gantt-track-row { height: 104px; border-bottom: 1px solid var(--border-color); position: relative; display: flex; align-items: center; }
-        .gantt-track-row:nth-child(even) { background-color: #fafbfc; }
-        .active-ship-timeline-bar { position: absolute; height: 6px; background-color: #e2e8f0; border-radius: 10px; border: 1px solid #cbd5e1; z-index: 10; top: 50%; transform: translateY(-50%); }
-        .timeline-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; background-color: #93c5fd; border-radius: 10px; opacity: 0.8; }
-        .timeline-today-node { position: absolute; width: 12px; height: 12px; background-color: var(--danger); border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 4px rgba(239,68,68,0.2); z-index: 30; top: 50%; transform: translate(-50%,-50%); }
+        .gantt-track-row { height: 104px; border-bottom: 1px solid var(--border-color); position: relative; display: flex;
+            align-items: center; }
+        .gantt-track-row:nth-child(even) { background-color: #fafbfc;
+        }
+        .active-ship-timeline-bar { position: absolute; height: 6px; background-color: #e2e8f0; border-radius: 10px;
+            border: 1px solid #cbd5e1; z-index: 10; top: 50%; transform: translateY(-50%);
+        }
+        .timeline-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; background-color: #93c5fd;
+            border-radius: 10px; opacity: 0.8; }
+        .timeline-today-node { position: absolute; width: 12px; height: 12px;
+            background-color: var(--danger); border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 4px rgba(239,68,68,0.2); z-index: 30; top: 50%; transform: translate(-50%,-50%);
+        }
 
-        .milestone-node { position: absolute; display: flex; flex-direction: column; align-items: center; transform: translateX(-50%); z-index: 20; cursor: pointer; }
-        .milestone-node.node-up { bottom: 8px; }
-        .milestone-node.node-down { top: 8px; }
-        .milestone-circle { width: 12px; height: 12px; border-radius: 50%; border: 2.5px solid #fff; box-shadow: var(--shadow-sm); background-color: #94a3b8; z-index: 22; }
-        .milestone-label { font-size: 10.5px; font-weight: 800; color: var(--text-main); white-space: nowrap; display: flex; flex-direction: column; align-items: center; gap: 1px; }
-        .node-up .milestone-label { margin-bottom: 4px; order: -1; }
-        .node-down .milestone-label { margin-top: 4px; order: 1; }
-        .milestone-date-text { font-size: 9px; color: var(--text-sub); font-weight: 700; font-family: monospace; }
+        .milestone-node { position: absolute; display: flex; flex-direction: column; align-items: center; transform: translateX(-50%);
+            z-index: 20; cursor: pointer; }
+        .milestone-node.node-up { bottom: 8px;
+        }
+        .milestone-node.node-down { top: 8px;
+        }
+        .milestone-circle { width: 12px; height: 12px; border-radius: 50%; border: 2.5px solid #fff;
+            box-shadow: var(--shadow-sm); background-color: #94a3b8; z-index: 22; }
+        .milestone-label { font-size: 10.5px; font-weight: 800;
+            color: var(--text-main); white-space: nowrap; display: flex; flex-direction: column; align-items: center; gap: 1px;
+        }
+        .node-up .milestone-label { margin-bottom: 4px; order: -1;
+        }
+        .node-down .milestone-label { margin-top: 4px; order: 1;
+        }
+        .milestone-date-text { font-size: 9px; color: var(--text-sub); font-weight: 700; font-family: monospace;
+        }
 
-        .m-ld .milestone-circle { background-color: #2563eb; }
-        .m-paint .milestone-circle { background-color: #4f46e5; }
-        .m-paint-end .milestone-circle { background-color: #7c3aed; }
-        .m-insul .milestone-circle { background-color: #db2777; }
-        .m-inspect .milestone-circle { background-color: #ea580c; }
-        .m-mount .milestone-circle { background-color: #16a34a; }
+        .m-ld .milestone-circle { background-color: #2563eb;
+        }
+        .m-paint .milestone-circle { background-color: #4f46e5;
+        }
+        .m-paint-end .milestone-circle { background-color: #7c3aed;
+        }
+        .m-insul .milestone-circle { background-color: #db2777;
+        }
+        .m-inspect .milestone-circle { background-color: #ea580c;
+        }
+        .m-mount .milestone-circle { background-color: #16a34a;
+        }
 
-        .milestone-diamond-node { position: absolute; display: flex; flex-direction: column; align-items: center; transform: translateX(-50%); z-index: 19; }
-        .milestone-diamond { width: 10px; height: 10px; background-color: #0d9488; transform: rotate(45deg); border: 1.5px solid #fff; box-shadow: var(--shadow-sm); }
-        .diamond-label { font-size: 9px; font-weight: 800; color: #0d9488; margin-top: 4px; white-space: nowrap; text-align: center; line-height: 1.15; }
+        .milestone-diamond-node { position: absolute; display: flex; flex-direction: column; align-items: center; transform: translateX(-50%);
+            z-index: 19; }
+        .milestone-diamond { width: 10px; height: 10px; background-color: #0d9488; transform: rotate(45deg);
+            border: 1.5px solid #fff; box-shadow: var(--shadow-sm); }
+        .diamond-label { font-size: 9px; font-weight: 800;
+            color: #0d9488; margin-top: 4px; white-space: nowrap; text-align: center; line-height: 1.15;
+        }
 
-        .modal-overlay { position: fixed; inset: 0; background-color: rgba(15,23,42,0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 9999; }
-        .modal-box { background-color: var(--card-color); border-radius: var(--radius-lg); width: 100%; max-width: 480px; padding: 24px; box-shadow: var(--shadow-lg); }
-        .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
-        .modal-header h3 { font-size: 16px; font-weight: 900; }
-        .modal-close { background: none; border: none; font-size: 24px; font-weight: 700; color: var(--text-muted); cursor: pointer; }
-        .modal-body { font-size: 13px; color: var(--text-sub); margin-bottom: 20px; line-height: 1.6; }
+        .modal-overlay { position: fixed; inset: 0; background-color: rgba(15,23,42,0.6); backdrop-filter: blur(4px); display: none;
+            align-items: center; justify-content: center; padding: 20px; z-index: 9999; }
+        .modal-box { background-color: var(--card-color);
+            border-radius: var(--radius-lg); width: 100%; max-width: 480px; padding: 24px; box-shadow: var(--shadow-lg);
+        }
+        .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
+        .modal-header h3 { font-size: 16px;
+            font-weight: 900; }
+        .modal-close { background: none; border: none; font-size: 24px; font-weight: 700;
+            color: var(--text-muted); cursor: pointer; }
+        .modal-body { font-size: 13px; color: var(--text-sub); margin-bottom: 20px;
+            line-height: 1.6; }
 
-        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 11000; display: flex; flex-direction: column; gap: 8px; max-width: 320px; width: calc(100% - 48px); }
-        .toast-item { background-color: #0f172a; color: #fff; padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 10px; transform: translateY(20px); opacity: 0; transition: all 0.3s cubic-bezier(0.16,1,0.3,1); }
-        .toast-item.active { transform: translateY(0); opacity: 1; }
-        .toast-error { background-color: var(--danger); }
-        .guide-footer { text-align: center; font-size: 11px; color: var(--text-muted); padding: 16px 0; user-select: none; }
+        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 11000;
+            display: flex; flex-direction: column; gap: 8px; max-width: 320px; width: calc(100% - 48px);
+        }
+        .toast-item { background-color: #0f172a; color: #fff; padding: 12px 16px; border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg); font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 10px; transform: translateY(20px); opacity: 0; transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+        }
+        .toast-item.active { transform: translateY(0); opacity: 1;
+        }
+        .toast-error { background-color: var(--danger);
+        }
+        .guide-footer { text-align: center; font-size: 11px; color: var(--text-muted); padding: 16px 0;
+            user-select: none; }
 
-        /* 통계+필터바: 고정 블록 */
         .sticky-top-panel {
             display: flex;
             flex-direction: column;
@@ -267,22 +350,32 @@
             flex-shrink: 0;
         }
 
-        /* 관리자 콘솔 탭 뷰 */
-        .admin-view { display: none; }
-        .admin-view.active { display: block; }
+        .admin-view { display: none;
+        }
+        .admin-view.active { display: block;
+        }
 
-        /* 호선 관리 목록 테이블 */
-        .ship-list-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .ship-list-table th { background-color: #f1f5f9; padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 800; color: var(--text-sub); border-bottom: 2px solid var(--border-color); white-space: nowrap; }
-        .ship-list-table td { padding: 10px 14px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
-        .ship-list-table tr:last-child td { border-bottom: none; }
-        .ship-list-table tr:hover td { background-color: #f8fafc; }
-        .ship-name-cell { font-weight: 800; color: var(--text-main); }
-        .date-cell { font-family: monospace; font-size: 12px; color: var(--text-sub); }
-        .action-cell { display: flex; gap: 6px; }
+        .ship-list-table { width: 100%;
+            border-collapse: collapse; font-size: 13px; }
+        .ship-list-table th { background-color: #f1f5f9; padding: 10px 14px;
+            text-align: left; font-size: 11px; font-weight: 800; color: var(--text-sub); border-bottom: 2px solid var(--border-color); white-space: nowrap;
+        }
+        .ship-list-table td { padding: 10px 14px; border-bottom: 1px solid var(--border-color); vertical-align: middle;
+        }
+        .ship-list-table tr:last-child td { border-bottom: none;
+        }
+        .ship-list-table tr:hover td { background-color: #f8fafc;
+        }
+        .ship-name-cell { font-weight: 800; color: var(--text-main);
+        }
+        .date-cell { font-family: monospace; font-size: 12px; color: var(--text-sub);
+        }
+        .action-cell { display: flex; gap: 6px;
+        }
 
-        /* 폼 구분선 */
-        .form-section-title { grid-column: 1 / -1; font-size: 12px; font-weight: 800; color: var(--text-sub); padding-bottom: 8px; border-bottom: 1px solid var(--border-color); margin-top: 4px; }
+        .form-section-title { grid-column: 1 / -1;
+            font-size: 12px; font-weight: 800; color: var(--text-sub); padding-bottom: 8px; border-bottom: 1px solid var(--border-color); margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -304,10 +397,7 @@
 </header>
 
 <main>
-    <!-- 관리자 콘솔 -->
     <section id="adminConsole" class="admin-section">
-
-        <!-- 공통 헤더 -->
         <div class="admin-header">
             <div class="admin-header-title">
                 <h2 id="adminConsoleTitle">공정 데이터 관리자 콘솔</h2>
@@ -321,7 +411,6 @@
             </div>
         </div>
 
-        <!-- [뷰 A] 호선 목록 + 신규등록 버튼 -->
         <div id="viewList" class="admin-view active">
             <div style="padding:16px 24px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
                 <span style="font-size:13px;font-weight:700;color:var(--text-sub);">등록된 호선 목록 — 수정/삭제는 이 화면에서 처리합니다.</span>
@@ -342,14 +431,11 @@
                             <th style="text-align:center;">관리</th>
                         </tr>
                     </thead>
-                    <tbody id="shipListBody">
-                        <!-- JS 렌더 -->
-                    </tbody>
+                    <tbody id="shipListBody"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- [뷰 B] 신규등록 / 수정 폼 -->
         <div id="viewForm" class="admin-view">
             <form id="shipForm" onsubmit="handleFormSubmit(event)" class="admin-form">
                 <input type="hidden" id="formMode" value="create">
@@ -400,44 +486,38 @@
                 </div>
             </form>
         </div>
-
     </section>
 
-    <!-- 통계 + 필터바: sticky 고정 묶음 -->
     <div class="sticky-top-panel">
-    <section class="stats-grid">
-        <div class="stat-card"><div class="stat-label">전체 가동 호선</div><div class="stat-value stat-total" id="statTotal">0</div></div>
-        <div class="stat-card"><div class="stat-label">실시간 공정 진행</div><div class="stat-value stat-progress" id="statProgress">0</div></div>
-        <div class="stat-card"><div class="stat-label">탑재 완료</div><div class="stat-value stat-completed" id="statCompleted">0</div></div>
-        <div class="stat-card"><div class="stat-label">입고 예정</div><div class="stat-value stat-pending" id="statPending">0</div></div>
-    </section>
+        <section class="stats-grid">
+            <div class="stat-card"><div class="stat-label">전체 가동 호선</div><div class="stat-value stat-total" id="statTotal">0</div></div>
+            <div class="stat-card"><div class="stat-label">실시간 공정 진행</div><div class="stat-value stat-progress" id="statProgress">0</div></div>
+            <div class="stat-card"><div class="stat-label">탑재 완료</div><div class="stat-value stat-completed" id="statCompleted">0</div></div>
+            <div class="stat-card"><div class="stat-label">입고 예정</div><div class="stat-value stat-pending" id="statPending">0</div></div>
+        </section>
 
-    <!-- 필터바 -->
-    <section class="filter-bar">
-        <div class="filter-left">
-            <input type="text" id="searchInput" oninput="renderDashboard()" placeholder="호선번호 검색..." style="padding:0 16px;height:38px;border:1px solid var(--border-color);border-radius:var(--radius-md);outline:none;font-size:13px;">
-            <div class="zoom-slider-container">
-                <label for="zoomScale">타임라인 배율:</label>
-                <input type="range" id="zoomScale" class="zoom-slider" min="1200" max="5000" value="2400" oninput="handleZoomChange(this.value)">
-                <span class="zoom-value" id="zoomValueText">2400px</span>
+        <section class="filter-bar">
+            <div class="filter-left">
+                <input type="text" id="searchInput" oninput="renderDashboard()" placeholder="호선번호 검색..." style="padding:0 16px;height:38px;border:1px solid var(--border-color);border-radius:var(--radius-md);outline:none;font-size:13px;">
+                <div class="zoom-slider-container">
+                    <label for="zoomScale">타임라인 배율:</label>
+                    <input type="range" id="zoomScale" class="zoom-slider" min="1200" max="5000" value="2400" oninput="handleZoomChange(this.value)">
+                    <span class="zoom-value" id="zoomValueText">2400px</span>
+                </div>
             </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <span style="font-size:12px;font-weight:700;color:var(--text-sub);">정렬 기준:</span>
-            <select id="sortSelect" onchange="renderDashboard()" style="height:38px;border:1px solid var(--border-color);border-radius:var(--radius-md);padding:0 12px;outline:none;font-weight:700;font-size:13px;">
-                <option value="name">호선 이름순</option>
-                <option value="req">L/D 입고 순</option>
-                <option value="mount">탑재 완료일 순</option>
-            </select>
-            <button onclick="restoreDefaultData()" class="btn btn-light" style="padding:8px 12px;height:38px;font-size:11px;">데이터 초기 복원</button>
-        </div>
-    </section>
-    </div><!-- /sticky-top-panel -->
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:12px;font-weight:700;color:var(--text-sub);">정렬 기준:</span>
+                <select id="sortSelect" onchange="renderDashboard()" style="height:38px;border:1px solid var(--border-color);border-radius:var(--radius-md);padding:0 12px;outline:none;font-weight:700;font-size:13px;">
+                    <option value="name">호선 이름순</option>
+                    <option value="req">L/D 입고 순</option>
+                    <option value="mount">탑재 완료일 순</option>
+                </select>
+                <button onclick="restoreDefaultData()" class="btn btn-light" style="padding:8px 12px;height:38px;font-size:11px;">데이터 초기 복원</button>
+            </div>
+        </section>
+    </div>
 
-    <!-- 간트 보드 -->
     <section class="gantt-board-wrapper">
-
-        <!-- 고정 범례 (스크롤 밖) -->
         <div class="gantt-legend-panel">
             <span class="legend-title">공정 범례</span>
             <div class="legend-item"><span class="legend-dot" style="background-color:#2563eb;"></span><span>L/D 입고</span></div>
@@ -449,21 +529,18 @@
             <div class="legend-item"><span class="legend-diamond"></span><span>PT입고요청일</span></div>
         </div>
 
-        <!-- 고정 헤더행: 범례 아래, 스크롤 밖 -->
-        <div class="gantt-fixed-header">
-            <div class="gantt-fixed-header-label">호선 및 공정 정보</div>
-            <div class="gantt-fixed-header-months" id="ganttMonthHeader"></div>
-        </div>
-
-        <!-- 스크롤 컨테이너: 데이터 행만 -->
         <div class="gantt-outer" id="ganttOuter">
-            <div class="gantt-inner" id="ganttScrollSheet" style="width:2400px;">
+            
+            <div id="ganttHeaderContainer" style="width:2400px; position:sticky; top:0; z-index:100;">
+                <div class="gantt-fixed-header">
+                    <div class="gantt-fixed-header-label">호선 및 공정 정보</div>
+                    <div class="gantt-fixed-header-months" id="ganttMonthHeader"></div>
+                </div>
+            </div>
 
-                <!-- 데이터 영역: label고정 + 트랙영역(gridlines/TODAY/행 포함) -->
+            <div class="gantt-inner" id="ganttScrollSheet" style="width:2400px;">
                 <div style="display:flex;">
-                    <!-- 좌측 라벨 열: sticky left -->
                     <div id="ganttLabelList" style="width:280px;min-width:280px;flex-shrink:0;position:sticky;left:0;z-index:20;background:#fff;border-right:2px solid var(--border-color);"></div>
-                    <!-- 우측 트랙 열: gridlines, TODAY, 행 -->
                     <div style="flex:1;position:relative;">
                         <div class="gantt-vertical-gridlines" id="ganttGridlines"></div>
                         <div id="ganttTodayLine" class="gantt-today-vertical-bar" style="display:none;">
@@ -472,14 +549,11 @@
                         <div id="ganttTrackList"></div>
                     </div>
                 </div>
-
             </div>
         </div>
     </section>
-
 </main>
 
-<!-- 비밀번호 모달 -->
 <div id="passwordModal" class="modal-overlay">
     <div class="modal-box">
         <div class="modal-header">
@@ -495,7 +569,6 @@
     </div>
 </div>
 
-<!-- 삭제 확인 모달 -->
 <div id="confirmModal" class="modal-overlay">
     <div class="modal-box" style="text-align:center;max-width:380px;">
         <div style="font-size:44px;margin-bottom:12px;">⚠️</div>
@@ -508,7 +581,6 @@
     </div>
 </div>
 
-<!-- 클립보드 모달 -->
 <div id="clipboardModal" class="modal-overlay">
     <div class="modal-box" style="max-width:550px;">
         <div class="modal-header">
@@ -534,26 +606,17 @@
     let isAdmin = false;
     let confirmCallback = null;
 
-    // ==========================================
-    // 탑재일 기준 역산 오프셋 (단위: 일)
-    // ==========================================
     const CALC_OFFSETS = {
-        req:      25,   // L/D 입고
-        paint:    20,   // 도장공장 입고
-        paintEnd: 14,   // 도장 완료
-        insul:     3,   // 보온 완료
-        inspect:   2    // 검사 일정
-        // pt: 직접 입력
+        req:      25,   
+        paint:    20,   
+        paintEnd: 14,   
+        insul:     3,   
+        inspect:   2    
     };
 
-    // ==========================================
-    // 탑재일 입력 시 나머지 자동 계산
-    // ==========================================
     function autoCalcDates() {
         const mountVal = document.getElementById('dateMount').value;
         if (!mountVal) return;
-
-        // 브라우저 호환 직접 파싱 (Invalid Date 방지)
         const p = mountVal.split('-');
         const mountDate = new Date(+p[0], +p[1] - 1, +p[2]);
 
@@ -590,6 +653,10 @@
     function getFormattedDate(d) {
         return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // 소스 84번 라인 등의 레거시 스타일 충돌 제어 방지
+    });
 
     function validateSchema(p) {
         if (!Array.isArray(p)) return false;
@@ -641,7 +708,6 @@
             }
         });
     });
-
     document.getElementById('confirmCancelBtn').onclick = () => { document.getElementById('confirmModal').style.display = 'none'; confirmCallback = null; };
     document.getElementById('confirmOkBtn').onclick = () => { if (confirmCallback) confirmCallback(); document.getElementById('confirmModal').style.display = 'none'; confirmCallback = null; };
 
@@ -660,16 +726,13 @@
     }
 
     function openPasswordModal() {
-        if (isAdmin) {
-            logout();
-        } else {
+        if (isAdmin) { logout(); } else {
             document.getElementById('adminPasswordInput').value = '';
             document.getElementById('passwordModal').style.display = 'flex';
             setTimeout(() => document.getElementById('adminPasswordInput').focus(), 50);
         }
     }
 
-    // 관리자 콘솔 뷰 전환 (list / form)
     function showView(view, mode) {
         document.getElementById('viewList').classList.remove('active');
         document.getElementById('viewForm').classList.remove('active');
@@ -696,7 +759,6 @@
         document.getElementById('adminConsole').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // 호선 목록 테이블 렌더링
     function renderShipList() {
         const db = loadDatabase();
         const tbody = document.getElementById('shipListBody');
@@ -717,8 +779,8 @@
                 <td class="date-cell" style="color:#0d9488;">${item.dates.pt.substring(5)}</td>
                 <td>
                     <div class="action-cell">
-                        <button class="btn btn-light" style="padding:4px 10px;font-size:11px;" onclick="editShip('${item.ship.replace(/'/g, "\'")}')">수정</button>
-                        <button class="btn btn-danger" style="padding:4px 10px;font-size:11px;" onclick="deleteShip('${item.ship.replace(/'/g, "\'")}')">삭제</button>
+                        <button class="btn btn-light" style="padding:4px 10px;font-size:11px;" onclick="editShip('${item.ship.replace(/'/g, "\\'")}')">수정</button>
+                        <button class="btn btn-danger" style="padding:4px 10px;font-size:11px;" onclick="deleteShip('${item.ship.replace(/'/g, "\\'")}')">삭제</button>
                     </div>
                 </td>
             </tr>
@@ -737,13 +799,11 @@
             showView('list');
             renderDashboard();
             showToast("관리자 로그인 성공.", "success");
-        } else {
-            showToast("비밀번호가 올바르지 않습니다.", "error");
-        }
+        } else { showToast("비밀번호가 올바르지 않습니다.", "error"); }
     }
 
     document.getElementById('adminPasswordInput').addEventListener('keypress', e => { if (e.key === 'Enter') submitAdminPassword(); });
-
+    
     function openClipboardModal() {
         document.getElementById('clipboardTextarea').value = JSON.stringify(loadDatabase(), null, 4);
         document.getElementById('clipboardModal').style.display = 'flex';
@@ -770,12 +830,20 @@
         } catch(e) { showToast("올바른 JSON 형식이 아닙니다.", "error"); }
     }
 
+    /* ══════════════════════════════════════
+       [버그 수정] 배율 조절 시 월 헤더 컨테이너 크기도 동기화 처리
+       ══════════════════════════════════════ */
     function handleZoomChange(val) {
         document.getElementById('zoomValueText').innerText = val + "px";
         document.getElementById('ganttScrollSheet').style.width = val + "px";
-        // 고정 헤더 월 표시도 같은 너비로
+        
+        // 상단 월 고정 영역 부모박스도 배율 값만큼 동일하게 확장되도록 수정
+        const hc = document.getElementById('ganttHeaderContainer');
+        if (hc) hc.style.width = val + "px";
+
         const mh = document.getElementById('ganttMonthHeader');
         if (mh) mh.style.width = val + "px";
+        
         renderDashboard();
     }
 
@@ -801,7 +869,7 @@
         const monthHeader = document.getElementById('ganttMonthHeader');
         const gridlines   = document.getElementById('ganttGridlines');
         const todayLine   = document.getElementById('ganttTodayLine');
-
+        
         let total = db.length, progress = 0, completed = 0, pending = 0;
         db.forEach(item => {
             if (TODAY < new Date(item.dates.req)) pending++;
@@ -837,15 +905,13 @@
             if (!isNaN(r) && r < minTime) minTime = r;
             if (!isNaN(m) && m > maxTime) maxTime = m;
         });
-
         const pad = 5 * 86400000;
         const globalStart = minTime - pad, globalEnd = maxTime + pad, globalDuration = globalEnd - globalStart;
-
         const s = new Date(new Date(globalStart).getFullYear(), new Date(globalStart).getMonth(), 1);
         const e = new Date(new Date(globalEnd).getFullYear(), new Date(globalEnd).getMonth() + 1, 1);
         const months = [];
         for (let c = new Date(s); c < e; c.setMonth(c.getMonth() + 1)) months.push(new Date(c));
-
+        
         for (let i = 0; i < months.length - 1; i++) {
             const ms = months[i].getTime(), me = months[i+1].getTime();
             const cs = Math.max(ms, globalStart), ce = Math.min(me, globalEnd);
@@ -884,7 +950,6 @@
             const pInspect  = ((new Date(item.dates.inspect).getTime()-shipStart)/shipDur)*100;
             const pPt       = ((new Date(item.dates.pt).getTime()-shipStart)/shipDur)*100;
 
-            // 라벨 열
             const labelDiv = document.createElement('div');
             labelDiv.style.cssText = 'height:104px;border-bottom:1px solid var(--border-color);padding:12px 16px;display:flex;flex-direction:column;justify-content:center;background:inherit;';
             labelDiv.innerHTML = `
@@ -894,7 +959,6 @@
             `;
             if (labelList) labelList.appendChild(labelDiv);
 
-            // 트랙 열 (left:% 는 트랙 전체 너비 기준)
             const trackDiv = document.createElement('div');
             trackDiv.style.cssText = 'height:104px;border-bottom:1px solid var(--border-color);position:relative;';
             trackDiv.innerHTML = `
@@ -951,14 +1015,15 @@
                 pt:       document.getElementById('datePt').value
             }
         };
-
         if (new Date(payload.dates.req) >= new Date(payload.dates.mount)) {
-            showToast("L/D 입고일은 탑재일보다 빨라야 합니다.", "error"); return;
+            showToast("L/D 입고일은 탑재일보다 빨라야 합니다.", "error");
+            return;
         }
 
         if (mode === "create") {
             if (db.some(item => item.ship.toLowerCase() === payload.ship.toLowerCase())) {
-                showToast("동일한 호선번호가 이미 등록되어 있습니다.", "error"); return;
+                showToast("동일한 호선번호가 이미 등록되어 있습니다.", "error");
+                return;
             }
             db.push(payload);
             showToast(`[${payload.ship}] 신규 등록 완료!`);
@@ -1034,24 +1099,19 @@
         event.target.value = '';
     }
 
-    // gantt-outer 가로 스크롤 → 고정 헤더 월 표시 동기화
-    function initScrollSync() {
-        const outer      = document.getElementById('ganttOuter');
-        const fixedMonths = document.querySelector('.gantt-fixed-header-months');
-        if (!outer || !fixedMonths) return;
-        outer.addEventListener('scroll', function() {
-            fixedMonths.scrollLeft = outer.scrollLeft;
-        });
-    }
-
-        window.onload = () => {
+    window.onload = () => {
         const b = document.getElementById('currentDateBadge');
         if (b) b.innerText = `기준일: ${getFormattedDate(TODAY)}`;
+        
+        // 초기 배율(2400px) 값을 헤더 요소들에도 적용
+        const val = document.getElementById('zoomScale').value;
+        const hc = document.getElementById('ganttHeaderContainer');
+        if (hc) hc.style.width = val + "px";
+        const mh = document.getElementById('ganttMonthHeader');
+        if (mh) mh.style.width = val + "px";
+
         renderDashboard();
-        initScrollSync();
     };
-
-
 </script>
 </body>
 </html>
