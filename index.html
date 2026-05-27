@@ -286,9 +286,9 @@
         .milestone-label { font-size: 10.5px; font-weight: 800;
             color: var(--text-main); white-space: nowrap; display: flex; flex-direction: column; align-items: center; gap: 0px;
         }
-        .node-up .milestone-label { margin-bottom: 4px; order: -1;
+        .node-up .milestone-label { margin-bottom: 1px; order: -1;
         }
-        .node-down .milestone-label { margin-top: 4px; order: 1;
+        .node-down .milestone-label { margin-top: 2px; order: 1;
         }
         .milestone-date-text { font-size: 11px; color: var(--text-sub); font-weight: 700; font-family: monospace;
         }
@@ -989,7 +989,7 @@
                         <div class="milestone-circle"></div>
                         <div class="milestone-label"><span>탑재</span><span class="milestone-date-text">${item.dates.mount.substring(5)}</span></div>
                     </div>
-                    <div class="milestone-diamond-node" style="left:${pPt}%;top:16px;">
+                    <div class="milestone-diamond-node" style="left:${pPt}%;top:1px;">
                         <div class="milestone-diamond"></div>
                         <div class="diamond-label">PT입고<br>(${item.dates.pt.substring(5)})</div>
                     </div>
