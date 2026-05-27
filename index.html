@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pump Tower & L/D Cover 공정 모니터링 시스템</title>
+    <style>
+        /* ==========================================
+           1. 디자인 토큰 및 가변 테마 변수 (Pure CSS)
+           ========================================== */
+        :root {
+            --bg-color: #f1f5f9;
+            --card-color: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --text-muted: #94a3b8;
+            --border-color: #cbd5e1;
+            
+            --primary: #0f172a;
+            --primary-hover: #1e293b;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --success: #10b981;
+            --warning: #f59e0b;
+            
+            --radius-lg: 12px;
+            --radius-md: 8px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 기본 설정 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ==========================================
+           2. 헤더 영역 및 기준일 인디케이터
+           ========================================== */
+        header {
+            background-color: var(--card-color);
+            border-bottom: 2px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-emoji {
+            font-size: 32px;
+        }
+
+        .logo-title h1 {
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+        }
+
+        .logo-title p {
+            font-size: 11px;
+            color: var(--text-sub);
+            font-weight: 600;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .date-badge {
+            background-color: #fff1f2;
+            color: #e11d48;
+            border: 1px solid #ffe4e6;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #e11d48;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.5; }
+            100% { transform: scale(0.9); opacity: 1; }
+        }
+
+        /* ==========================================
+           3. 공용 버튼 정의
+           ========================================== */
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-dark { background-color: var(--primary); color: #ffffff; }
+        .btn-dark:hover { background-color: var(--primary-hover); }
+        .btn-danger { background-color: var(--danger); color: #ffffff; }
+        .btn-danger:hover { background-color: var(--danger-hover); }
+        .btn-accent { background-color: var(--accent); color: #ffffff; }
+        .btn-accent:hover { background-color: var(--accent-hover); }
+        .btn-light { background-color: #f1f5f9; color: var(--text-sub); border: 1px solid #cbd5e1; }
+        .btn-light:hover { background-color: #e2e8f0; border-color: #94a3b8; }
+
+        /* ==========================================
+           4. 레이아웃 주 경로
+           ========================================== */
+        main {
+            max-width: 1600px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            flex-grow: 1;
+        }
+
+        /* ==========================================
+           5. 관리자 제어판
+           ========================================== */
+        .admin-section {
+            display: none;
+            background-color: var(--card-color);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .admin-header {
+            background-color: var(--primary);
+            color: #ffffff;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .admin-header-title h2 { font-size: 15px; font-weight: 800; }
+        .admin-header-title p { font-size: 11px; color: var(--text-muted); }
+        .admin-header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .admin-form {
+            padding: 24px;
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 16px;
+        }
+
+        @media (min-width: 640px) {
+            .admin-form { grid-template-columns: repeat(2, 1fr); }
+            .full-width { grid-column: span 2; }
+        }
+
+        @media (min-width: 1024px) {
+            .admin-form { grid-template-columns: repeat(4, 1fr); }
+            .full-width { grid-column: span 4; }
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 11px; font-weight: 800; color: var(--text-sub); }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            background-color: #f8fafc;
+            outline: none;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent);
+            background-color: #ffffff;
+        }
+
+        /* ==========================================
+           6. 대시보드 통계 카드
+           ========================================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .stat-card {
+            background-color: var(--card-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-label { font-size: 11px; font-weight: 700; color: var(--text-muted); }
+        .stat-value { font-size: 26px; font-weight: 900; margin-top: 4px; }
+        .stat-total { color: var(--text-main); }
+        .stat-progress { color: var(--accent); }
+        .stat-completed { color: var(--success); }
+        .stat-pending { color: var(--warning); }
+
+        /* ==========================================
+           7. 검색 및 고급 줌 가이드 필터바
+           ========================================== */
+        .filter-bar {
+            background-color: var(--card-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        @media (min-width: 1024px) {
+            .filter-bar {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        .filter-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-grow: 1;
+            flex-wrap: wrap;
+        }
+
+        /* 차트 줌 슬라이더 디자인 */
+        .zoom-slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #f1f5f9;
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .zoom-slider-container label {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text-sub);
+            white-space: nowrap;
+        }
+
+        .zoom-slider {
+            width: 160px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .zoom-value {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--accent);
+            min-width: 45px;
+            text-align: right;
+            font-family: monospace;
+        }
+
+        /* ==========================================
+           8. 전사 통합 일정 간트 프레임워크 (Gantt Board)
+           ========================================== */
+        .gantt-board-wrapper {
+            background-color: var(--card-color);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 상단 글로벌 공동 범례(Legend) 패널 연동 */
+        .gantt-legend-panel {
+            background-color: #f8fafc;
+            border-bottom: 2px solid var(--border-color);
+            padding: 12px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-sub);
+        }
+
+        .legend-title {
+            color: var(--text-main);
+            border-right: 2px solid var(--border-color);
+            padding-right: 16px;
+            margin-right: -4px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+
+        .legend-diamond {
+            width: 10px;
+            height: 10px;
+            background-color: #0d9488;
+            transform: rotate(45deg);
+            border: 1.5px solid #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+
+        /* [개선] 횡 구조 컨테이너: 가로 스크롤을 막고 내부 스플릿 방식을 유도 */
+        .gantt-flow-container {
+            display: flex;
+            overflow: hidden; /* 사이드바 완전 고정 */
+            position: relative;
+        }
+
+        /* 고정 왼쪽 레이어: 호선 프로필 컬럼 */
+        .gantt-left-sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            background-color: #ffffff;
+            border-right: 2px solid var(--border-color);
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            height: 48px;
+            background-color: #f1f5f9;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 13px;
+            font-weight: 900;
+            color: var(--text-main);
+        }
+
+        /* 호선 세로 높이 최적 크기 지정: 115px */
+        .sidebar-row {
+            height: 115px; 
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background-color: #ffffff;
+        }
+
+        .sidebar-row:nth-child(even) {
+            background-color: #fafbfc;
+        }
+
+        /* [개선] 우측 스크롤 가변 레이어: 실제 타임라인 영역 자체에 가로 스크롤을 적용! */
+        .gantt-timeline-area {
+            flex-grow: 1;
+            overflow-x: auto; /* 타임라인 자체를 스크롤하게 하여 줌 효과를 즉시 물리적으로 체감하도록 설계 */
+            position: relative;
+            background-color: #ffffff;
+        }
+
+        /* JS 가변 width 바인딩 컨테이너 */
+        .gantt-scrollable-sheet {
+            position: relative;
+            min-height: 100%;
+        }
+
+        /* 통합 X축 월별 헤더 */
+        .gantt-month-header {
+            height: 48px;
+            background-color: #f1f5f9;
+            border-bottom: 2px solid var(--border-color);
+            position: relative;
+        }
+
+        .grid-month-block {
+            position: absolute;
+            height: 100%;
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-sub);
+            background-color: #f8fafc;
+        }
+
+        /* 백그라운드 그리드 선 레이어 */
+        .gantt-vertical-gridlines {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .grid-vertical-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            border-left: 1px dashed rgba(203, 213, 225, 0.6);
+        }
+
+        /* 오늘 수직 빨간 가이드 기둥선 */
+        .gantt-today-vertical-bar {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            border-left: 2px dashed #ef4444;
+            z-index: 25;
+            pointer-events: none;
+        }
+
+        .gantt-today-badge {
+            position: absolute;
+            top: 6px;
+            transform: translateX(-50%);
+            background-color: #ef4444;
+            color: #ffffff;
+            font-size: 9px;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 4px;
+            z-index: 26;
+            white-space: nowrap;
+        }
+
+        /* 호선 트랙 세로 높이 최적 크기 지정: 115px */
+        .gantt-track-row {
+            height: 115px;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .gantt-track-row:nth-child(even) {
+            background-color: #fafbfc;
+        }
+
+        /* 호선별 실제 활성 영역 가이드 타임바 */
+        .active-ship-timeline-bar {
+            position: absolute;
+            height: 6px;
+            background-color: #e2e8f0;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            z-index: 10;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* 진척 상황 게이지 */
+        .timeline-progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            background-color: #93c5fd;
+            border-radius: 10px;
+            opacity: 0.8;
+        }
+
+        /* 오늘 시점 붉은 마커 */
+        .timeline-today-node {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: var(--danger);
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+            z-index: 30;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* ==========================================
+           9. 지그재그 교차형 노드 세부 디자인 (세로 115px 최적화 마진)
+           ========================================== */
+        .milestone-node {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: translateX(-50%);
+            z-index: 20;
+            cursor: pointer;
+        }
+
+        /* 상단 홀수 교차 노드 배치 (높아진 공간 활용하여 최적화 정렬) */
+        .milestone-node.node-up {
+            bottom: 10px; 
+        }
+
+        /* 하단 짝수 교차 노드 배치 (높아진 공간 활용하여 최적화 정렬) */
+        .milestone-node.node-down {
+            top: 10px; 
+        }
+
+        .milestone-circle {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2.5px solid #ffffff;
+            box-shadow: var(--shadow-sm);
+            background-color: #94a3b8;
+            z-index: 22;
+        }
+
+        /* 노드 교차 세부 텍스트 가독성 고정 */
+        .milestone-label {
+            font-size: 10.5px;
+            font-weight: 800;
+            color: var(--text-main);
+            white-space: nowrap;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+        }
+
+        .node-up .milestone-label {
+            margin-bottom: 4px;
+            order: -1; /* 원형 마커 위로 글씨 정렬 */
+        }
+
+        .node-down .milestone-label {
+            margin-top: 4px;
+            order: 1; /* 원형 마커 아래로 글씨 정렬 */
+        }
+
+        .milestone-date-text {
+            font-size: 9px;
+            color: var(--text-sub);
+            font-weight: 700;
+            font-family: monospace;
+        }
+
+        /* 공정별 고정 시그니처 배색 컬러링 */
+        .m-ld .milestone-circle { background-color: #2563eb; }
+        .m-paint .milestone-circle { background-color: #4f46e5; }
+        .m-paint-end .milestone-circle { background-color: #7c3aed; }
+        .m-insul .milestone-circle { background-color: #db2777; }
+        .m-inspect .milestone-circle { background-color: #ea580c; }
+        .m-mount .milestone-circle { background-color: #16a34a; }
+
+        /* 8번 분기 PT입고요청일 다이아몬드 마커 */
+        .milestone-diamond-node {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: translateX(-50%);
+            z-index: 19;
+        }
+
+        .milestone-diamond {
+            width: 10px;
+            height: 10px;
+            background-color: #0d9488;
+            transform: rotate(45deg);
+            border: 1.5px solid #ffffff;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .diamond-label {
+            font-size: 9px;
+            font-weight: 800;
+            color: #0d9488;
+            margin-top: 4px;
+            white-space: nowrap;
+            text-align: center;
+            line-height: 1.15;
+        }
+
+        /* ==========================================
+           10. 빌트인 수동식 모달 오버레이 설계
+           ========================================== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 9999;
+        }
+
+        .modal-box {
+            background-color: var(--card-color);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 480px;
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .modal-header h3 { font-size: 16px; font-weight: 900; }
+        .modal-close { background: none; border: none; font-size: 24px; font-weight: 700; color: var(--text-muted); cursor: pointer; }
+        .modal-body { font-size: 13px; color: var(--text-sub); margin-bottom: 20px; line-height: 1.6; }
+
+        /* 토스트 알림 구조 */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 11000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-width: 320px;
+            width: calc(100% - 48px);
+        }
+
+        .toast-item {
+            background-color: #0f172a;
+            color: #ffffff;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .toast-item.active { transform: translateY(0); opacity: 1; }
+        .toast-error { background-color: var(--danger); }
+
+        /* 안내 하부 캡션 */
+        .guide-footer {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            padding: 16px 0;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. 최상단 실시간 모니터 헤더 -->
+    <header>
+        <div class="header-container">
+            <div class="logo-group">
+                <span class="logo-emoji">🚢</span>
+                <div class="logo-title">
+                    <h1>Pump Tower & L/D Cover</h1>
+                    <p>공정 관리 통합 간트 스케줄러 (Global Shared Axis)</p>
+                </div>
+            </div>
+            
+            <div class="header-controls">
+                <div class="date-badge">
+                    <span class="pulse-dot"></span>
+                    <span id="currentDateBadge">기준일: 로딩 중...</span>
+                </div>
+                <button id="adminBtn" class="btn btn-dark" onclick="openPasswordModal()">
+                    🔒 관리자 모드
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- 2. 관리자 제어판 콘솔 영역 (PT입고요청일 일원화 및 크래시 가드 반영) -->
+        <section id="adminConsole" class="admin-section">
+            <div class="admin-header">
+                <div class="admin-header-title">
+                    <h2>🛠️ 공정 데이터 가공 관리자 콘솔</h2>
+                    <p>신규 프로젝트를 설계 등록하거나 일정을 수정하고, 보안망 우회용 텍스트 공유 기능을 활용합니다.</p>
+                </div>
+                <div class="admin-header-actions">
+                    <button onclick="triggerJSONImport()" class="btn btn-light" style="padding: 6px 12px; font-size: 11px;">📂 JSON 가져오기</button>
+                    <button onclick="exportToJSON()" class="btn btn-light" style="padding: 6px 12px; font-size: 11px;">💾 JSON 파일 받기</button>
+                    <button onclick="openClipboardModal()" class="btn btn-accent" style="padding: 6px 12px; font-size: 11px;">📋 텍스트 복붙 관리</button>
+                    <input type="file" id="jsonFileInput" style="display: none;" accept=".json,.txt" onchange="importFromJSON(event)">
+                </div>
+            </div>
+            
+            <form id="shipForm" onsubmit="handleFormSubmit(event)" class="admin-form">
+                <input type="hidden" id="formMode" value="create">
+                <input type="hidden" id="originalShipId" value="">
+                
+                <div class="form-group full-width">
+                    <label>1. 호선번호 / 프로젝트 명칭 (ship)</label>
+                    <input type="text" id="shipId" required placeholder="예: SEAPEAK (SN2657)" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>2. L/D 입고일 (시작 기준점)</label>
+                    <input type="date" id="dateReq" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>3. 도장공장 입고일</label>
+                    <input type="date" id="datePaint" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>4. 도장완료일정</label>
+                    <input type="date" id="datePaintEnd" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>5. 보온완료일정</label>
+                    <input type="date" id="dateInsul" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>6. 검사일정</label>
+                    <input type="date" id="dateInspect" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>7. 탑재일정 (종료 기준점)</label>
+                    <input type="date" id="dateMount" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>8. PT입고요청일</label>
+                    <input type="date" id="datePt" required class="form-control">
+                </div>
+                <div class="form-group form-actions" style="grid-column: -1; margin-top: 6px;">
+                    <button type="button" onclick="resetForm()" class="btn btn-light">취소</button>
+                    <button type="submit" id="submitBtn" class="btn btn-accent">호선 신규등록</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- 3. 실시간 공정 상태 통계 계량판 -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">전체 가동 호선</div>
+                <div class="stat-value stat-total" id="statTotal">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">실시간 공정 진행</div>
+                <div class="stat-value stat-progress" id="statProgress">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">선체 탑재 완료</div>
+                <div class="stat-value stat-completed" id="statCompleted">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">입고 예정 준비</div>
+                <div class="stat-value stat-pending" id="statPending">0</div>
+            </div>
+        </section>
+
+        <!-- 4. 고도화 정밀 제어 및 서치 바 -->
+        <section class="filter-bar">
+            <div class="filter-left">
+                <!-- 검색 -->
+                <div class="search-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" oninput="renderDashboard()" placeholder="호선번호 검색..." class="search-input" style="padding-left:36px; padding-right:16px; height: 38px; border: 1px solid var(--border-color); border-radius: var(--radius-md); outline: none;">
+                </div>
+                <!-- 줌 슬라이더 기본값 1.5배인 2000px로 넉넉하게 세팅 -->
+                <div class="zoom-slider-container">
+                    <label for="zoomScale">타임라인 줌 배율:</label>
+                    <input type="range" id="zoomScale" class="zoom-slider" min="1200" max="5000" value="2400" oninput="handleZoomChange(this.value)">
+                    <span class="zoom-value" id="zoomValueText">2400px</span>
+                </div>
+            </div>
+            <div class="sort-wrapper">
+                <span class="sort-label">정렬 기준:</span>
+                <select id="sortSelect" onchange="renderDashboard()" class="sort-select" style="height:38px; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding:0 12px; outline:none; font-weight:700;">
+                    <option value="name">호선 이름순</option>
+                    <option value="req">L/D 입고 순 (빠른순)</option>
+                    <option value="mount">선체 탑재 완료일 순</option>
+                </select>
+                <button onclick="restoreDefaultData()" class="btn btn-light" style="padding: 8px 12px; height: 38px; font-size: 11px;">
+                    🔄 데이터 초기 복원
+                </button>
+            </div>
+        </section>
+
+        <!-- 5. 횡 동기화 간트 보드 메인 프레임 -->
+        <section class="gantt-board-wrapper">
+            
+            <!-- 최상단 글로벌 공동 범례(Legend) 패널 연동 (출고 제거 및 PT입고요청일 일원화 반영) -->
+            <div class="gantt-legend-panel">
+                <span class="legend-title">🎨 핵심 공정 범례 가이드</span>
+                <div class="legend-item"><span class="legend-dot" style="background-color: #2563eb;"></span><span>L/D 입고</span></div>
+                <div class="legend-item"><span class="legend-dot" style="background-color: #4f46e5;"></span><span>도장공장 입고</span></div>
+                <div class="legend-item"><span class="legend-dot" style="background-color: #7c3aed;"></span><span>도장 완료</span></div>
+                <div class="legend-item"><span class="legend-dot" style="background-color: #db2777;"></span><span>보온 완료</span></div>
+                <div class="legend-item"><span class="legend-dot" style="background-color: #ea580c;"></span><span>검사 일정</span></div>
+                <div class="legend-item"><span class="legend-dot" style="background-color: #16a34a;"></span><span>선체 탑재</span></div>
+                <div class="legend-item"><span class="legend-diamond"></span><span>PT입고요청일</span></div>
+            </div>
+
+            <div class="gantt-flow-container" id="ganttFlowContainer">
+                
+                <!-- (1) 고정 왼쪽 사이드바: 호선 프로필 리스트 -->
+                <div class="gantt-left-sidebar" id="ganttSidebarList">
+                    <div class="sidebar-header">🚢 호선 및 공정 정보</div>
+                    <!-- JS 렌더러 주입 영역 -->
+                </div>
+                
+                <!-- (2) 우측 스크롤 동기화 간트 영역 -->
+                <div class="gantt-timeline-area">
+                    <!-- [개선] 로드 시 가로 폭을 기본 2400px로 세팅하여 시원하게 글자 분리 -->
+                    <div class="gantt-scrollable-sheet" id="ganttScrollSheet" style="width: 2400px;">
+                        
+                        <!-- 가변 월 격자 헤더 -->
+                        <div class="gantt-month-header" id="ganttMonthHeader">
+                            <!-- JS 렌더러 주입 영역 -->
+                        </div>
+                        
+                        <!-- 가상 기둥선 그리드 레이어 -->
+                        <div class="gantt-vertical-gridlines" id="ganttGridlines">
+                            <!-- JS 렌더러 주입 영역 -->
+                        </div>
+                        
+                        <!-- 오늘 가이드 수직선 및 플로팅 뱃지 -->
+                        <div id="ganttTodayLine" class="gantt-today-vertical-bar" style="display: none;">
+                            <span class="gantt-today-badge">TODAY</span>
+                        </div>
+                        
+                        <!-- 실제 간트 차트 트랙 리스트 -->
+                        <div id="ganttTrackList">
+                            <!-- JS 렌더러 주입 영역 -->
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 6. 하부 캡션 가이드 -->
+        <div class="guide-footer">
+            💡 간트 차트 세부 공정 트랙 영역을 터치 슬라이드하거나 마우스 드래그하여 전체 7대 공정 일정을 확인하세요.
+        </div>
+    </main>
+
+    <!-- ==========================================
+       10. 관리자 비밀번호 2차 검증 모달
+       ========================================== -->
+    <div id="passwordModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>🔒 관리자 권한 2차 보안 인증</h3>
+                <button onclick="closePasswordModal()" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                호선 설계 정보의 정밀 가공 권한을 활성화하려면 사내 보안 비밀번호를 입력하십시오.<br>
+                <strong style="color: var(--text-main);">(개발 규격 비밀번호: 0990)</strong>
+            </div>
+            <input type="password" id="adminPasswordInput" class="form-control" style="text-align: center; font-size: 20px; tracking-widest: 4px; font-family: monospace; margin-bottom: 16px;" placeholder="••••" maxlength="4">
+            <div style="display: flex; gap: 8px;">
+                <button onclick="closePasswordModal()" class="btn btn-light" style="flex: 1;">취소</button>
+                <button onclick="submitAdminPassword()" class="btn btn-dark" style="flex: 1;">인증 적용</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+       11. 삭제 경고 빌트인 다이얼로그 모달
+       ========================================== -->
+    <div id="confirmModal" class="modal-overlay">
+        <div class="modal-box" style="text-align: center; max-width: 380px;">
+            <div style="font-size: 44px; margin-bottom: 12px;">⚠️</div>
+            <h3 id="confirmTitle" style="font-size: 16px; font-weight: 900; margin-bottom: 8px;">삭제 영구 소멸 안내</h3>
+            <p id="confirmMessage" style="font-size: 13px; color: var(--text-sub); line-height: 1.5; margin-bottom: 20px;">이 데이터를 정말로 삭제하시겠습니까?</p>
+            <div style="display: flex; gap: 8px;">
+                <button id="confirmCancelBtn" class="btn btn-light" style="flex: 1;">취소</button>
+                <button id="confirmOkBtn" class="btn btn-danger" style="flex: 1;">삭제 확정</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+       12. 사내 보안망 우회용 클립보드 공유 복붙 모달
+       ========================================== -->
+    <div id="clipboardModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 550px;">
+            <div class="modal-header">
+                <h3>📋 텍스트 복붙 데이터 연동 (DRM/보안망 우회)</h3>
+                <button onclick="closeClipboardModal()" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" style="margin-bottom: 12px;">
+                <p style="margin-bottom: 8px;">사내 보안 문서 지정으로 인해 파일 연동이 안 될 때는 아래 가공 데이터를 활용하세요.</p>
+                <ul style="padding-left: 18px; margin-bottom: 10px; font-size: 11px; color: var(--text-sub);">
+                    <li><strong>보안 보관:</strong> 아래 텍스트창을 전체 선택 후 복사하여 메모장이나 사내 메신저에 보관하십시오.</li>
+                    <li><strong>일괄 복원:</strong> 기존 보관해둔 텍스트 전체를 아래에 붙여넣고 [데이터 적용]을 누르면 즉시 복구됩니다.</li>
+                </ul>
+                <textarea id="clipboardTextarea" class="form-control" style="width: 100%; height: 200px; font-family: monospace; font-size: 11px; line-height: 1.4; background-color: #f1f5f9; resize: vertical;" placeholder="이곳에 JSON 형식의 공정 데이터를 붙여넣으십시오."></textarea>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button onclick="closeClipboardModal()" class="btn btn-light" style="flex: 1;">닫기</button>
+                <button onclick="copyClipboardText()" class="btn btn-dark" style="flex: 1;">📋 전체 복사하기</button>
+                <button onclick="applyClipboardText()" class="btn btn-accent" style="flex: 1.5;">📥 데이터 일괄 적용</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 13. 우하단 토스트 알림 컨테이너 -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- ==========================================
+       14. 자바스크립트 논리 공정 엔진 (Pure JS)
+       ========================================== */ -->
+    <script>
+        // 시스템 상의 실제 오늘 날짜 적용 (사내 입력 화면 예시와 동일하게 2026-05-27로 안전 고정)
+        const TODAY = new Date('2026-05-27');
+        let isAdmin = false;
+        let confirmCallback = null;
+
+        // 예시 데이터 모형 설계 (초기 데이터셋 보존 장치)
+        const initialMockData = [
+            {
+                ship: "SEAPEAK (SN2657)",
+                dates: {
+                    req: "2026-05-01",
+                    paint: "2026-05-10",
+                    paintEnd: "2026-05-15",
+                    insul: "2026-05-20",
+                    inspect: "2026-05-25",
+                    mount: "2026-06-10",
+                    pt: "2026-06-05"
+                }
+            },
+            {
+                ship: "MARAN GAS (SN2658)",
+                dates: {
+                    req: "2026-05-15",
+                    paint: "2026-05-22",
+                    paintEnd: "2026-05-26",
+                    insul: "2026-06-01",
+                    inspect: "2026-06-05",
+                    mount: "2026-06-20",
+                    pt: "2026-06-15"
+                }
+            },
+            {
+                ship: "H-LINE LNG (SN2659)",
+                dates: {
+                    req: "2026-05-28",
+                    paint: "2026-06-02",
+                    paintEnd: "2026-06-07",
+                    insul: "2026-06-12",
+                    inspect: "2026-06-18",
+                    mount: "2026-07-02",
+                    pt: "2026-06-25"
+                }
+            },
+            {
+                ship: "MITSUI O.S.K. (SN2660)",
+                dates: {
+                    req: "2026-04-10",
+                    paint: "2026-04-18",
+                    paintEnd: "2026-04-23",
+                    insul: "2026-04-28",
+                    inspect: "2026-05-03",
+                    mount: "2026-05-20",
+                    pt: "2026-05-14"
+                }
+            }
+        ];
+
+        // 가상 폴백 스토리지 (localStorage 차단 환경 대응)
+        const StorageManager = {
+            isSupported: function() {
+                try {
+                    if (typeof window === 'undefined' || !('localStorage' in window)) return false;
+                    const testKey = '__storage_test_key__';
+                    window.localStorage.setItem(testKey, testKey);
+                    window.localStorage.removeItem(testKey);
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            },
+            memoryStorage: {},
+            getItem: function(key) {
+                try {
+                    if (this.isSupported()) {
+                        return window.localStorage.getItem(key);
+                    }
+                } catch (e) {}
+                return this.memoryStorage[key] || null;
+            },
+            setItem: function(key, value) {
+                try {
+                    if (this.isSupported()) {
+                        window.localStorage.setItem(key, value);
+                        return;
+                    }
+                } catch (e) {}
+                this.memoryStorage[key] = value;
+            }
+        };
+
+        // 날짜를 YYYY-MM-DD 형식으로 가공
+        function getFormattedDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // 스키마 구조 검증
+        function validateSchema(parsed) {
+            if (!Array.isArray(parsed)) return false;
+            return parsed.every(item => 
+                item && 
+                typeof item.ship === 'string' && 
+                item.dates && 
+                typeof item.dates.req === 'string' &&
+                typeof item.dates.paint === 'string' &&
+                typeof item.dates.paintEnd === 'string' &&
+                typeof item.dates.insul === 'string' &&
+                typeof item.dates.inspect === 'string' &&
+                typeof item.dates.mount === 'string' &&
+                typeof item.dates.pt === 'string'
+            );
+        }
+
+        // 데이터베이스 정밀 로드
+        function loadDatabase() {
+            try {
+                const stored = StorageManager.getItem('pump_tower_db');
+                if (stored === null) {
+                    StorageManager.setItem('pump_tower_db', JSON.stringify(initialMockData));
+                    return initialMockData;
+                }
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed)) {
+                    if (parsed.length === 0) return [];
+                    if (validateSchema(parsed)) return parsed;
+                }
+                StorageManager.setItem('pump_tower_db', JSON.stringify(initialMockData));
+                return initialMockData;
+            } catch (err) {
+                return initialMockData;
+            }
+        }
+
+        function saveDatabase(data) {
+            try {
+                StorageManager.setItem('pump_tower_db', JSON.stringify(data));
+            } catch (err) {
+                showToast("데이터 임시 메모리 저장 완료", "warning");
+            }
+            renderDashboard();
+        }
+
+        function restoreDefaultData() {
+            saveDatabase(initialMockData);
+            showToast("기본 샘플 데이터셋으로 원상 복구되었습니다.", "success");
+        }
+
+        // 토스트 출력기
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = `toast-item ${type === 'error' ? 'toast-error' : ''}`;
+            const icon = type === 'success' ? '✅' : '❌';
+            toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.add('active'); }, 50);
+            setTimeout(() => {
+                toast.classList.remove('active');
+                setTimeout(() => { toast.remove(); }, 300);
+            }, 3000);
+        }
+
+        // 빌트인 대화상자 바인더
+        function showConfirm(title, message, callback) {
+            document.getElementById('confirmTitle').innerText = title;
+            document.getElementById('confirmMessage').innerText = message;
+            document.getElementById('confirmModal').style.display = 'flex';
+            confirmCallback = callback;
+        }
+
+        // 바깥 클릭 모달 자동 폐쇄
+        document.addEventListener('click', function(e) {
+            const pwModal = document.getElementById('passwordModal');
+            const confirmModal = document.getElementById('confirmModal');
+            const clipModal = document.getElementById('clipboardModal');
+            if (e.target === pwModal) closePasswordModal();
+            if (e.target === confirmModal) {
+                confirmModal.style.display = 'none';
+                confirmCallback = null;
+            }
+            if (e.target === clipModal) closeClipboardModal();
+        });
+
+        document.getElementById('confirmCancelBtn').addEventListener('click', () => {
+            document.getElementById('confirmModal').style.display = 'none';
+            confirmCallback = null;
+        });
+
+        document.getElementById('confirmOkBtn').addEventListener('click', () => {
+            if (confirmCallback) confirmCallback();
+            document.getElementById('confirmModal').style.display = 'none';
+            confirmCallback = null;
+        });
+
+        // 비밀번호 인증
+        function openPasswordModal() {
+            if (isAdmin) {
+                isAdmin = false;
+                document.getElementById('adminConsole').style.display = 'none';
+                const btn = document.getElementById('adminBtn');
+                btn.className = "btn btn-dark";
+                btn.innerText = "🔒 관리자 모드";
+                resetForm();
+                renderDashboard();
+                showToast("관리자 제어 권한이 안전하게 회수되었습니다.");
+            } else {
+                document.getElementById('adminPasswordInput').value = '';
+                document.getElementById('passwordModal').style.display = 'flex';
+                setTimeout(() => {
+                    const input = document.getElementById('adminPasswordInput');
+                    if (input) input.focus();
+                }, 50);
+            }
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').style.display = 'none';
+        }
+
+        function submitAdminPassword() {
+            const pw = document.getElementById('adminPasswordInput').value.trim();
+            if (pw === "0990") {
+                isAdmin = true;
+                document.getElementById('adminConsole').style.display = 'block';
+                const btn = document.getElementById('adminBtn');
+                btn.className = "btn btn-danger";
+                btn.innerText = "🔓 로그아웃";
+                closePasswordModal();
+                renderDashboard();
+                showToast("관리자 로그인 인증에 성공했습니다.", "success");
+            } else {
+                showToast("비밀번호가 올바르지 않습니다.", "error");
+            }
+        }
+
+        document.getElementById('adminPasswordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') submitAdminPassword();
+        });
+
+        // 텍스트 클립보드 관리
+        function openClipboardModal() {
+            const db = loadDatabase();
+            const textarea = document.getElementById('clipboardTextarea');
+            textarea.value = JSON.stringify(db, null, 4);
+            document.getElementById('clipboardModal').style.display = 'flex';
+        }
+
+        function closeClipboardModal() {
+            document.getElementById('clipboardModal').style.display = 'none';
+        }
+
+        // 수동 클립보드 복사 기법 적용
+        function copyClipboardText() {
+            const textarea = document.getElementById('clipboardTextarea');
+            textarea.select();
+            textarea.setSelectionRange(0, 99999);
+            try {
+                document.execCommand('copy');
+                showToast("전체 가공 데이터가 클립보드에 복사되었습니다.");
+            } catch (err) {
+                showToast("직접 드래그 선택 후 복사해 주십시오.", "warning");
+            }
+        }
+
+        function applyClipboardText() {
+            const text = document.getElementById('clipboardTextarea').value.trim();
+            if (!text) {
+                showToast("입력창이 비어 있습니다.", "error");
+                return;
+            }
+            try {
+                const parsed = JSON.parse(text);
+                if (validateSchema(parsed)) {
+                    showConfirm(
+                        "공정 데이터 강제 적용",
+                        `입력된 텍스트에서 총 ${parsed.length}개의 프로젝트 일정을 복원했습니다. 기존의 모든 공정 현황을 덮어씌우시겠습니까?`,
+                        () => {
+                            saveDatabase(parsed);
+                            closeClipboardModal();
+                            showToast("텍스트 데이터가 일괄 복원 적용되었습니다.", "success");
+                        }
+                    );
+                } else {
+                    showToast("구조화된 공정 키값 필드가 부족합니다. 구조를 점검하세요.", "error");
+                }
+            } catch (e) {
+                showToast("올바른 JSON 데이터 텍스트가 아닙니다.", "error");
+            }
+        }
+
+        // 가로 줌 스케일 변화 핸들러
+        function handleZoomChange(val) {
+            document.getElementById('zoomValueText').innerText = val + "px";
+            document.getElementById('ganttScrollSheet').style.width = val + "px";
+            renderDashboard(); // 동적 스크롤 그리드선 및 마커 일괄 렌더링 동기화
+        }
+
+        // 호선별 진척 상태 레이아웃 분석
+        function determineCurrentPhase(item) {
+            const req = new Date(item.dates.req);
+            const paint = new Date(item.dates.paint);
+            const paintEnd = new Date(item.dates.paintEnd);
+            const insul = new Date(item.dates.insul);
+            const inspect = new Date(item.dates.inspect);
+            const mount = new Date(item.dates.mount);
+
+            if (TODAY < req) return { text: "입고 예정 준비", className: "badge-pending" };
+            if (TODAY >= req && TODAY < paint) return { text: "L/D 입고 / 대기", className: "badge-ld" };
+            if (TODAY >= paint && TODAY < paintEnd) return { text: "도장 가동 작업", className: "badge-paint" };
+            if (TODAY >= paintEnd && TODAY < insul) return { text: "도장완료 / 보온대기", className: "badge-insul" };
+            if (TODAY >= insul && TODAY < inspect) return { text: "보온완료 / 검사대기", className: "badge-inspect" };
+            if (TODAY >= inspect && TODAY < mount) return { text: "최종 심사 / 탑재준비", className: "badge-inspect" };
+            return { text: "선체 탑재 완료", className: "badge-completed" };
+        }
+
+        // ==========================================
+        // 대시보드 렌더링 코어 (글로벌 엑시스 동기화 모델)
+        // ==========================================
+        function renderDashboard() {
+            const db = loadDatabase();
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const sortBy = document.getElementById('sortSelect').value;
+
+            const sidebar = document.getElementById('ganttSidebarList');
+            const trackList = document.getElementById('ganttTrackList');
+            const monthHeader = document.getElementById('ganttMonthHeader');
+            const gridlines = document.getElementById('ganttGridlines');
+            const todayLine = document.getElementById('ganttTodayLine');
+
+            // 1. 공정 상태 통계 계량
+            let total = db.length;
+            let progress = 0;
+            let completed = 0;
+            let pending = 0;
+
+            db.forEach(item => {
+                const req = new Date(item.dates.req);
+                const mount = new Date(item.dates.mount);
+                if (TODAY < req) pending++;
+                else if (TODAY > mount) completed++;
+                else progress++;
+            });
+
+            document.getElementById('statTotal').innerText = total;
+            document.getElementById('statProgress').innerText = progress;
+            document.getElementById('statCompleted').innerText = completed;
+            document.getElementById('statPending').innerText = pending;
+
+            // 검색 및 정렬 필터 적용
+            let filtered = db.filter(item => item.ship.toLowerCase().includes(searchTerm));
+            if (sortBy === "name") {
+                filtered.sort((a, b) => a.ship.localeCompare(b.ship));
+            } else if (sortBy === "req") {
+                filtered.sort((a, b) => new Date(a.dates.req) - new Date(b.dates.req));
+            } else if (sortBy === "mount") {
+                filtered.sort((a, b) => new Date(a.dates.mount) - new Date(b.dates.mount));
+            }
+
+            // 가로 레이어 헤더 초기 리셋
+            sidebar.innerHTML = '<div class="sidebar-header">🚢 호선 및 공정 정보</div>';
+            trackList.innerHTML = '';
+            monthHeader.innerHTML = '';
+            gridlines.innerHTML = '';
+            todayLine.style.display = 'none';
+
+            if (filtered.length === 0) {
+                trackList.innerHTML = `
+                    <div class="empty-state" style="margin: 40px auto; max-width: 400px;">
+                        <div class="empty-icon">🔍</div>
+                        <div class="empty-title">매치되는 일정이 없습니다.</div>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">등록된 데이터가 없거나 필터에 일치하는 호선이 없습니다.</p>
+                    </div>`;
+                return;
+            }
+
+            // 2. 통합 글로벌 스케일 범위 산출 (가장 빠른일자 ~ 가장 늦은일자)
+            let minTime = Infinity;
+            let maxTime = -Infinity;
+
+            filtered.forEach(item => {
+                const reqTime = new Date(item.dates.req).getTime();
+                const mountTime = new Date(item.dates.mount).getTime();
+                if (!isNaN(reqTime) && reqTime < minTime) minTime = reqTime;
+                if (!isNaN(mountTime) && mountTime > maxTime) maxTime = mountTime;
+            });
+
+            // 시각적 여유분 안전 마스킹 (좌우 5일 추가 확보)
+            const marginPadding = 5 * 24 * 60 * 60 * 1000;
+            const globalStart = minTime - marginPadding;
+            const globalEnd = maxTime + marginPadding;
+            const globalDuration = globalEnd - globalStart;
+
+            // X축 월 격자 단위 산출 루프
+            const dateOffsetStart = new Date(globalStart);
+            const dateOffsetEnd = new Date(globalEnd);
+            const startMonth = new Date(dateOffsetStart.getFullYear(), dateOffsetStart.getMonth(), 1);
+            const endMonth = new Date(dateOffsetEnd.getFullYear(), dateOffsetEnd.getMonth() + 1, 1);
+
+            const months = [];
+            let currentCursor = new Date(startMonth);
+            while (currentCursor < endMonth) {
+                months.push(new Date(currentCursor));
+                currentCursor.setMonth(currentCursor.getMonth() + 1);
+            }
+
+            // 월 격자 HTML 헤더 빌드 및 가이드선 배치
+            for (let i = 0; i < months.length - 1; i++) {
+                const mStart = months[i].getTime();
+                const mEnd = months[i+1].getTime();
+                
+                const clipStart = Math.max(mStart, globalStart);
+                const clipEnd = Math.min(mEnd, globalEnd);
+                
+                if (clipEnd > clipStart) {
+                    const widthPct = ((clipEnd - clipStart) / globalDuration) * 100;
+                    const leftPct = ((clipStart - globalStart) / globalDuration) * 100;
+                    const monthLabel = `${months[i].getMonth() + 1}월`;
+
+                    // 월명 뱃지 추가
+                    const block = document.createElement('div');
+                    block.className = 'grid-month-block';
+                    block.style.left = `${leftPct}%`;
+                    block.style.width = `${widthPct}%`;
+                    block.innerText = monthLabel;
+                    monthHeader.appendChild(block);
+
+                    // 수직 격자선 추가
+                    const line = document.createElement('div');
+                    line.className = 'grid-vertical-line';
+                    line.style.left = `${leftPct}%`;
+                    gridlines.appendChild(line);
+                }
+            }
+
+            // 오늘 실시간 수직 빨간 라인 바인딩
+            const todayTime = TODAY.getTime();
+            if (todayTime >= globalStart && todayTime <= globalEnd) {
+                const todayPct = ((todayTime - globalStart) / globalDuration) * 100;
+                todayLine.style.left = `${todayPct}%`;
+                todayLine.style.display = 'block';
+            }
+
+            // 3. 각 호선 데이터별 수평 동기화 트랙 및 교차(Staggered) 렌더링
+            filtered.forEach(item => {
+                const phase = determineCurrentPhase(item);
+                const shipStart = new Date(item.dates.req).getTime();
+                const shipEnd = new Date(item.dates.mount).getTime();
+                const shipDuration = shipEnd - shipStart;
+
+                // 글로벌 타임라인 대비 개별 호선 영역 크기 연산
+                const shipLeftPct = ((shipStart - globalStart) / globalDuration) * 100;
+                const shipWidthPct = ((shipEnd - shipStart) / globalDuration) * 100;
+
+                // 오늘 기준 호선별 자체 진척율
+                let progressPct = 0;
+                if (todayTime > shipStart) {
+                    progressPct = todayTime >= shipEnd ? 100 : ((todayTime - shipStart) / shipDuration) * 100;
+                }
+
+                // 8대 주요 공정 날짜 시간 환산
+                const tPaint = new Date(item.dates.paint).getTime();
+                const tPaintEnd = new Date(item.dates.paintEnd).getTime();
+                const tInsul = new Date(item.dates.insul).getTime();
+                const tInspect = new Date(item.dates.inspect).getTime();
+                const tPt = new Date(item.dates.pt).getTime();
+
+                // 개별 호선 타임바 내의 상대적 백분율 좌표 산출
+                const pPaint = ((tPaint - shipStart) / shipDuration) * 100;
+                const pPaintEnd = ((tPaintEnd - shipStart) / shipDuration) * 100;
+                const pInsul = ((tInsul - shipStart) / shipDuration) * 100;
+                const pInspect = ((tInspect - shipStart) / shipDuration) * 100;
+                const pPt = ((tPt - shipStart) / shipDuration) * 100;
+
+                // [좌측 영역]: 호선 정보 사이드 프로필 바인딩
+                const sideRow = document.createElement('div');
+                sideRow.className = 'sidebar-row';
+                sideRow.innerHTML = `
+                    <div style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
+                        <div>
+                            <span class="phase-badge ${phase.className}">${phase.text}</span>
+                        </div>
+                        <div class="ship-name" style="margin-top:2px; font-size: 13px; font-weight:800; line-height:1.2;">${item.ship}</div>
+                        <div class="ship-duration" style="font-size: 10px; margin-top:2px;">L/C: ${item.dates.req.substring(2)} ~ ${item.dates.mount.substring(5)}</div>
+                    </div>
+                    ${isAdmin ? `
+                        <div class="ship-admin-actions" style="margin-top: 4px;">
+                            <button class="btn btn-light" style="padding: 2px 6px; font-size: 10px;" onclick="editShip('${item.ship}')">📝 수정</button>
+                            <button class="btn btn-danger" style="padding: 2px 6px; font-size: 10px;" onclick="deleteShip('${item.ship}')">🗑️ 삭제</button>
+                        </div>
+                    ` : ''}
+                `;
+                sidebar.appendChild(sideRow);
+
+                // [우측 영역]: 글로벌 매핑 스무스 타임라인 트랙 및 교차 노드 주입
+                const trackRow = document.createElement('div');
+                trackRow.className = 'gantt-track-row';
+                
+                trackRow.innerHTML = `
+                    <!-- 호선 가변 크기 활성 타임바 라인 -->
+                    <div class="active-ship-timeline-bar" style="left: ${shipLeftPct}%; width: ${shipWidthPct}%;">
+                        <!-- 진척 채우기 게이지 -->
+                        <div class="timeline-progress-fill" style="width: ${progressPct}%;"></div>
+                        
+                        <!-- 오늘 시점 둥근 인디케이터 (호선 범위 내부일때만 노출) -->
+                        ${todayTime >= shipStart && todayTime <= shipEnd ? `
+                            <div class="timeline-today-node" style="left: ${progressPct}%;"></div>
+                        ` : ''}
+
+                        <!-- 7대 교차 가독성 노드 (지그재그 오버랩 방지) -->
+                        <!-- 1. L/D 입고 (0%, 홀수->Up) -->
+                        <div class="milestone-node m-ld node-up" style="left: 0%;">
+                            <div class="milestone-circle"></div>
+                            <div class="milestone-label">
+                                <span>L/D 입고</span>
+                                <span class="milestone-date-text">${item.dates.req.substring(5)}</span>
+                            </div>
+                        </div>
+
+                        <!-- 2. 도장공장 입고 (짝수->Down) -->
+                        <div class="milestone-node m-paint node-down" style="left: ${pPaint}%;">
+                            <div class="milestone-circle"></div>
+                            <div class="milestone-label">
+                                <span>도장공장</span>
+                                <span class="milestone-date-text">${item.dates.paint.substring(5)}</span>
+                            </div>
+                        </div>
+
+                        <!-- 3. 도장 완료 (홀수->Up) -->
+                        <div class="milestone-node m-paint-end node-up" style="left: ${pPaintEnd}%;">
+                            <div class="milestone-circle"></div>
+                            <div class="milestone-label">
+                                <span>도장완료</span>
+                                <span class="milestone-date-text">${item.dates.paintEnd.substring(5)}</span>
+                            </div>
+                        </div>
+
+                        <!-- 4. 보온 완료 (짝수->Down) -->
+                        <div class="milestone-node m-insul node-down" style="left: ${pInsul}%;">
+                            <div class="milestone-circle"></div>
+                            <div class="milestone-label">
+                                <span>보온완료</span>
+                                <span class="milestone-date-text">${item.dates.insul.substring(5)}</span>
+                            </div>
+                        </div>
+
+                        <!-- 5. 검사 일정 (홀수->Up) -->
+                        <div class="milestone-node m-inspect node-up" style="left: ${pInspect}%;">
+                            <div class="milestone-circle"></div>
+                            <div class="milestone-label">
+                                <span>검사일정</span>
+                                <span class="milestone-date-text">${item.dates.inspect.substring(5)}</span>
+                            </div>
+                        </div>
+
+                        <!-- 6. 선체 탑재 (100%, 짝수->Down) -->
+                        <div class="milestone-node m-mount node-down" style="left: 100%;">
+                            <div class="milestone-circle"></div>
+                            <div class="milestone-label">
+                                <span>선체탑재</span>
+                                <span class="milestone-date-text">${item.dates.mount.substring(5)}</span>
+                            </div>
+                        </div>
+
+                        <!-- 7. PT입고요청일 일정 (다이아몬드 마커, 하단 이탈 배치) -->
+                        <div class="milestone-diamond-node" style="left: ${pPt}%; top: 16px;">
+                            <div class="milestone-diamond"></div>
+                            <div class="diamond-label">PT입고요청일<br>(${item.dates.pt.substring(5)})</div>
+                        </div>
+
+                    </div>
+                `;
+                trackList.appendChild(trackRow);
+            });
+        }
+
+        // 새 호선 등록 및 양식 가공 트랜잭션
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const db = loadDatabase();
+            const mode = document.getElementById('formMode').value;
+            
+            const payload = {
+                ship: document.getElementById('shipId').value.trim(),
+                dates: {
+                    req: document.getElementById('dateReq').value,
+                    paint: document.getElementById('datePaint').value,
+                    paintEnd: document.getElementById('datePaintEnd').value,
+                    insul: document.getElementById('dateInsul').value,
+                    inspect: document.getElementById('dateInspect').value,
+                    mount: document.getElementById('dateMount').value,
+                    pt: document.getElementById('datePt').value
+                }
+            };
+
+            // 기본 비즈니스 날짜 논리순서 검증
+            if (new Date(payload.dates.req) >= new Date(payload.dates.mount)) {
+                showToast("L/D 입고일(시작일)은 선체 탑재일(종료일)보다 반드시 빨라야 합니다.", "error");
+                return;
+            }
+
+            if (mode === "create") {
+                if (db.some(item => item.ship.toLowerCase() === payload.ship.toLowerCase())) {
+                    showToast("동일한 호선번호가 이미 등록되어 있습니다.", "error");
+                    return;
+                }
+                db.push(payload);
+                showToast(`[${payload.ship}] 신규 프로젝트 등록 성공!`);
+            } else {
+                const originalId = document.getElementById('originalShipId').value;
+                const idx = db.findIndex(item => item.ship === originalId);
+                if (idx !== -1) {
+                    db[idx] = payload;
+                    showToast(`[${payload.ship}] 공정 일정이 수정 갱신되었습니다.`);
+                }
+            }
+
+            saveDatabase(db);
+            resetForm();
+        }
+
+        function editShip(shipId) {
+            const db = loadDatabase();
+            const target = db.find(item => item.ship === shipId);
+            if (!target) return;
+
+            document.getElementById('formMode').value = "update";
+            document.getElementById('originalShipId').value = target.ship;
+            
+            document.getElementById('shipId').value = target.ship;
+            document.getElementById('dateReq').value = target.dates.req;
+            document.getElementById('datePaint').value = target.dates.paint;
+            document.getElementById('datePaintEnd').value = target.dates.paintEnd;
+            document.getElementById('dateInsul').value = target.dates.insul;
+            document.getElementById('dateInspect').value = target.dates.inspect;
+            document.getElementById('dateMount').value = target.dates.mount;
+            document.getElementById('datePt').value = target.dates.pt;
+
+            document.getElementById('submitBtn').innerText = "호선 정보 수정 적용";
+            document.getElementById('adminConsole').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function deleteShip(shipId) {
+            showConfirm(
+                "프로젝트 영구 삭제",
+                `[${shipId}] 데이터를 삭제하시겠습니까? 로컬 저장 정보에서 즉시 지워집니다.`,
+                () => {
+                    const db = loadDatabase();
+                    const filtered = db.filter(item => item.ship !== shipId);
+                    saveDatabase(filtered);
+                    showToast("성공적으로 파기 삭제되었습니다.");
+                }
+            );
+        }
+
+        function resetForm() {
+            document.getElementById('shipForm').reset();
+            document.getElementById('formMode').value = "create";
+            document.getElementById('originalShipId').value = "";
+            document.getElementById('submitBtn').innerText = "호선 신규등록";
+        }
+
+        // JSON 데이터 포맷 파일 내보내기 (보안 암호화 차단 수단)
+        function exportToJSON() {
+            const db = loadDatabase();
+            const jsonString = JSON.stringify(db, null, 4);
+            const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", `PumpTower_Gantt_Plan_${getFormattedDate(TODAY)}.json`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("공정 데이터를 백업 JSON 파일로 내보냈습니다.");
+        }
+
+        function triggerJSONImport() {
+            document.getElementById('jsonFileInput').click();
+        }
+
+        function importFromJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const text = e.target.result;
+                    const parsed = JSON.parse(text);
+                    if (validateSchema(parsed)) {
+                        showConfirm(
+                            "텍스트/JSON 데이터 일괄 교체",
+                            `가져온 데이터에서 총 ${parsed.length}개의 호선 일정을 확인했습니다. 기존 내용을 전체 리셋하고 교체하시겠습니까?`,
+                            () => {
+                                saveDatabase(parsed);
+                                showToast("공정 스케줄 목록이 성공적으로 업데이트되었습니다.", "success");
+                            }
+                        );
+                    } else {
+                        showToast("유효하지 않은 공정 스키마 형식입니다.", "error");
+                    }
+                } catch (err) {
+                    showToast("JSON 파일 구문 오류가 발견되었습니다.", "error");
+                }
+            };
+            reader.readAsText(file, "UTF-8");
+            event.target.value = ''; 
+        }
+
+        // 실행 시작 엔트리포인트
+        window.onload = function() {
+            const currentDateBadge = document.getElementById('currentDateBadge');
+            if (currentDateBadge) {
+                currentDateBadge.innerText = `기준일: ${getFormattedDate(TODAY)}`;
+            }
+            renderDashboard();
+        };
+    </script>
+</body>
+</html>
