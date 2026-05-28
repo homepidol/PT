@@ -477,7 +477,7 @@
                     <input type="date" id="dateInspect" required class="form-control auto-calc">
                 </div>
                 <div class="form-group">
-                    <label>8. PT입고요청일 <span class="manual-tag">직접 입력</span></label>
+                    <label>8. PT입고요청일 <span class="auto-tag">자동 -1일</span></label>
                     <input type="date" id="datePt" required class="form-control">
                 </div>
 
@@ -612,7 +612,8 @@
         paint:    20,   
         paintEnd: 14,   
         insul:     3,   
-        inspect:   2    
+        inspect:   2,
+        pt:        1
     };
 
     function autoCalcDates() {
@@ -633,6 +634,8 @@
         document.getElementById('datePaintEnd').value = subtractDays(CALC_OFFSETS.paintEnd);
         document.getElementById('dateInsul').value    = subtractDays(CALC_OFFSETS.insul);
         document.getElementById('dateInspect').value  = subtractDays(CALC_OFFSETS.inspect);
+          document.getElementById('datePt').value  = subtractDays(CALC_OFFSETS.pt);
+        
     }
 
     const initialMockData = [
