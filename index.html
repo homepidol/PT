@@ -6,43 +6,48 @@
 <title>Pump Tower & L/D Cover 공정 모니터링 시스템</title>
 <style>
 :root {
---bg-color: #f1f5f9;
---card-color: #ffffff; --text-main: #0f172a; --text-sub: #475569;
---text-muted: #94a3b8; --border-color: #cbd5e1; --primary: #0f172a; --primary-hover: #1e293b;
---accent: #2563eb; --accent-hover: #1d4ed8; --danger: #ef4444;
+--bg-color: #f5f5f7;
+--card-color: #ffffff; --text-main: #1d1d1f; --text-sub: #333333;
+--text-muted: #7a7a7a; --border-color: #e0e0e0; --primary: #1d1d1f; --primary-hover: #000000;
+--accent: #0066cc; --accent-hover: #0071e3; --danger: #d92d20;
 --danger-hover: #dc2626;
---success: #10b981; --warning: #f59e0b; --radius-lg: 12px; --radius-md: 8px;
---shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
---shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
---shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+--success: #168a43; --warning: #b7791f; --radius-lg: 18px; --radius-md: 11px;
+--shadow-sm: none;
+--shadow-md: none;
+--shadow-lg: 0 18px 60px rgba(0,0,0,0.16);
+--gantt-label-width: clamp(220px, 18vw, 260px);
 }
 * { box-sizing: border-box; margin: 0; padding: 0;
-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+font-family: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.5; height: 100vh; overflow: hidden;
 display: flex; flex-direction: column; }
+@media (max-width: 900px) {
+body { height: auto; min-height: 100vh; overflow: auto; }
+:root { --gantt-label-width: 210px; }
+}
 
-header { background-color: var(--card-color); border-bottom: 2px solid var(--border-color);
+header { background-color: #000000; color: #ffffff; border-bottom: 0;
 position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
 .header-container { max-width: 1600px;
-margin: 0 auto; padding: 0 24px; height: 70px; display: flex; align-items: center; justify-content: space-between;
+margin: 0 auto; padding: 0 32px; height: 64px; display: flex; align-items: center; justify-content: space-between;
 }
-.logo-title h1 { font-size: 18px; font-weight: 900; letter-spacing: -0.5px;
+.logo-title h1 { font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif; font-size: 21px; font-weight: 600; letter-spacing: 0.231px;
 }
-.logo-title p { font-size: 11px; color: var(--text-sub); font-weight: 600;
+.logo-title p { font-size: 12px; color: #cccccc; font-weight: 400;
 }
 .header-controls { display: flex; align-items: center; gap: 12px;
 }
-.date-badge { background-color: #fff1f2; color: #e11d48; border: 1px solid #ffe4e6;
-padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 6px;
+.date-badge { background-color: rgba(210,210,215,0.18); color: #f5f5f7; border: 1px solid rgba(255,255,255,0.14);
+padding: 7px 14px; border-radius: 9999px; font-size: 12px; font-weight: 400; display: flex; align-items: center; gap: 6px;
 }
-.pulse-dot { width: 8px; height: 8px; background-color: #e11d48; border-radius: 50%;
+.pulse-dot { width: 8px; height: 8px; background-color: #2997ff; border-radius: 50%;
 animation: pulse 1.5s infinite; }
 @keyframes pulse { 0%,100% { transform: scale(0.9);
 opacity: 1; } 50% { transform: scale(1.3); opacity: 0.5; } }
 
-.btn { padding: 10px 20px;
-border-radius: var(--radius-md); font-size: 13px; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center;
+.btn { padding: 11px 22px;
+border-radius: 9999px; font-size: 14px; font-weight: 400; border: none; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center;
 gap: 6px; box-shadow: var(--shadow-sm); }
 .btn-dark { background-color: var(--primary); color: #fff;
 }
@@ -56,22 +61,59 @@ gap: 6px; box-shadow: var(--shadow-sm); }
 }
 .btn-accent:hover { background-color: var(--accent-hover);
 }
-.btn-light { background-color: #f1f5f9; color: var(--text-sub); border: 1px solid #cbd5e1;
+.btn-light { background-color: #fafafc; color: var(--text-sub); border: 1px solid var(--border-color);
 }
-.btn-light:hover { background-color: #e2e8f0;
+.btn-light:hover { background-color: #ffffff; color: var(--accent);
+}
+.icon-btn {
+width: 40px;
+height: 40px;
+border-radius: 9999px;
+border: 1px solid rgba(255,255,255,0.16);
+background-color: rgba(210,210,215,0.18);
+color: #ffffff;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+transition: background-color 0.2s, transform 0.2s, border-color 0.2s;
+}
+.icon-btn:hover {
+background-color: rgba(210,210,215,0.28);
+transform: translateY(-1px);
+}
+.icon-btn.is-admin {
+background-color: var(--danger);
+border-color: rgba(255,255,255,0.12);
+}
+.icon-btn svg {
+width: 19px;
+height: 19px;
+stroke: currentColor;
+stroke-width: 2;
+fill: none;
+stroke-linecap: round;
+stroke-linejoin: round;
 }
 
 main { max-width: 1600px; width: 100%; margin: 0 auto; padding: 0 24px;
 display: flex; flex-direction: column; gap: 0; flex-grow: 1; overflow: hidden;
 }
+@media (max-width: 900px) {
+main { padding: 0 14px; overflow: visible; }
+.header-container { padding: 0 14px; height: 58px; }
+.logo-title h1 { font-size: 16px; }
+.logo-title p { display: none; }
+.date-badge { padding: 6px 10px; font-size: 10px; }
+}
 
 .admin-section { display: none; background-color: var(--card-color); border: 2px solid var(--primary); border-radius: var(--radius-lg);
 box-shadow: var(--shadow-lg); overflow-y: auto; max-height: 55vh; flex-shrink: 0; margin: 0 0 16px 0;
 }
-.admin-header { background-color: var(--primary); color: #fff; padding: 16px 20px; display: flex;
+.admin-header { background-color: var(--primary); color: #fff; padding: 18px 24px; display: flex;
 align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-.admin-header-title h2 { font-size: 15px;
-font-weight: 800; }
+.admin-header-title h2 { font-size: 17px;
+font-weight: 600; letter-spacing: -0.374px; }
 .admin-header-title p { font-size: 11px; color: var(--text-muted);
 }
 .admin-header-actions { display: flex; gap: 8px; flex-wrap: wrap;
@@ -95,73 +137,220 @@ font-weight: 700; color: var(--success); background: #f0fdf4; border: 1px solid 
 border: 1px solid var(--border-color); border-radius: 4px; padding: 1px 5px; }
 
 .form-control { width: 100%;
-padding: 10px 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 13px; background-color: #f8fafc; outline: none; transition: border-color 0.15s, background-color 0.15s;
+padding: 12px 16px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 14px; background-color: #ffffff; outline: none; transition: border-color 0.15s, background-color 0.15s, box-shadow 0.15s;
 }
 .form-control:focus { border-color: var(--accent); background-color: #fff;
+box-shadow: 0 0 0 3px rgba(0,102,204,0.14);
 }
-.form-control.auto-calc { background-color: #f0fdf4; border-color: #86efac; color: #15803d;
+.form-control.auto-calc { background-color: #fafafc; border-color: #e0e0e0; color: var(--text-main);
 }
-.form-control.auto-calc:focus { border-color: var(--success);
+.form-control.auto-calc:focus { border-color: var(--accent);
 }
 
 /* 탑재일 강조 */
 .form-control.mount-input { border-color: var(--accent);
-border-width: 2px; background-color: #eff6ff; font-weight: 700; }
+border-width: 1px; background-color: #ffffff; font-weight: 600; }
 .form-control.mount-input:focus { background-color: #fff;
 }
 
-.calc-info-banner { grid-column: 1 / -1; background-color: #f0fdf4; border: 1px solid #86efac;
-border-radius: var(--radius-md); padding: 10px 14px; font-size: 11px; color: #15803d; font-weight: 700;
+.calc-info-banner { grid-column: 1 / -1; background-color: #f5f5f7; border: 1px solid var(--border-color);
+border-radius: var(--radius-md); padding: 12px 16px; font-size: 12px; color: var(--text-sub); font-weight: 400;
+}
+.calc-info-title {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 12px;
+margin-bottom: 10px;
+font-weight: 600;
+color: var(--text-main);
+}
+.calc-title-actions {
+display: flex;
+align-items: center;
+gap: 6px;
+flex-wrap: wrap;
+justify-content: flex-end;
+}
+.calc-title-note {
+font-size: 11px;
+color: var(--text-muted);
+font-weight: 400;
+}
+.btn-mini {
+height: 30px;
+padding: 0 12px;
+font-size: 11px;
+border-radius: 9999px;
+}
+.calc-edit-actions {
+display: none;
+gap: 6px;
+}
+.calc-info-banner.is-editing .calc-edit-actions {
+display: flex;
+}
+.calc-info-banner.is-editing #calcEditBtn {
+display: none;
+}
+.calc-offset-grid {
+display: grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 8px;
+}
+.calc-offset-item {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 8px;
+background: #ffffff;
+border: 1px solid var(--border-color);
+border-radius: var(--radius-md);
+padding: 8px 10px;
+}
+.calc-offset-item span {
+font-size: 11px;
+font-weight: 600;
+color: var(--text-sub);
+}
+.calc-offset-input {
+width: 72px;
+height: 30px;
+padding: 0 8px;
+border: 1px solid var(--border-color);
+border-radius: 9999px;
+font-size: 12px;
+font-weight: 600;
+text-align: center;
+outline: none;
+}
+.calc-offset-input:disabled {
+background-color: #ffffff;
+color: var(--text-main);
+opacity: 1;
+-webkit-text-fill-color: var(--text-main);
+cursor: not-allowed;
+}
+.calc-offset-input:focus {
+border-color: var(--accent);
+box-shadow: 0 0 0 3px rgba(0,102,204,0.14);
+}
+@media (min-width: 1024px) {
+.calc-offset-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+.calc-info-title { align-items: flex-start; flex-direction: column; }
+.calc-title-actions { justify-content: flex-start; }
+.calc-offset-grid { grid-template-columns: 1fr; }
 }
 
-.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+.dashboard-layout {
+display: flex;
+flex-direction: column;
+gap: 14px;
+flex: 1;
+min-height: 0;
+padding: 20px 0 16px;
 }
-@media (min-width: 768px) { .stats-grid { grid-template-columns: repeat(4, 1fr);
-} }
+.chart-workspace {
+display: grid;
+grid-template-columns: minmax(0, 1fr) 220px;
+gap: 16px;
+flex: 1;
+min-height: 0;
+align-items: stretch;
+}
+.dashboard-main {
+display: flex;
+flex-direction: column;
+min-width: 0;
+min-height: 0;
+}
+.kpi-rail {
+min-width: 0;
+order: 2;
+display: flex;
+min-height: 0;
+}
+.stats-grid { display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%; height: 100%;
+}
 .stat-card { background-color: var(--card-color); border: 1px solid var(--border-color); border-radius: var(--radius-lg);
-padding: 16px; box-shadow: var(--shadow-sm); }
-.stat-label { font-size: 11px; font-weight: 700; color: var(--text-muted);
+padding: 16px 18px; box-shadow: var(--shadow-sm); min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.stat-label { font-size: 12px; font-weight: 400; color: var(--text-muted); line-height: 1.1;
 }
-.stat-value { font-size: 26px; font-weight: 900; margin-top: 4px;
+.stat-value { font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif; font-size: 34px; font-weight: 600; margin-top: 2px; letter-spacing: -0.374px; line-height: 1;
 }
 .stat-total { color: var(--text-main); } .stat-progress { color: var(--accent);
 } .stat-completed { color: var(--success); } .stat-pending { color: var(--warning);
 }
+@media (max-width: 1180px) {
+.chart-workspace { grid-template-columns: 1fr; }
+.kpi-rail { order: -1; }
+.stats-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); height: auto; }
+.stat-card { min-height: 76px; padding: 12px 14px; }
+.stat-value { font-size: 28px; }
+}
+@media (max-width: 720px) {
+.dashboard-layout { padding: 12px 0; gap: 12px; }
+.chart-workspace { gap: 12px; }
+.stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.stat-label { font-size: 10px; }
+.stat-value { font-size: 24px; }
+}
 
 .filter-bar { background-color: var(--card-color); border: 1px solid var(--border-color); border-radius: var(--radius-lg);
 padding: 16px 20px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 20px;
+flex-shrink: 0;
 }
 @media (min-width: 1024px) { .filter-bar { flex-direction: row; align-items: center; justify-content: space-between;
 } }
 .filter-left { display: flex; align-items: center; gap: 16px; flex-grow: 1;
 flex-wrap: wrap; }
-.zoom-slider-container { display: flex; align-items: center; gap: 10px; background-color: #f1f5f9;
-padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border-color); }
+.zoom-slider-container { display: flex; align-items: center; gap: 10px; background-color: #fafafc;
+padding: 7px 14px; border-radius: 9999px; border: 1px solid var(--border-color); }
 .zoom-slider-container label { font-size: 11px;
 font-weight: 800; color: var(--text-sub); white-space: nowrap; }
 .zoom-slider { width: 160px; cursor: pointer;
 accent-color: var(--accent); }
 .zoom-value { font-size: 11px; font-weight: 800; color: var(--accent); min-width: 45px;
 text-align: right; font-family: monospace; }
+@media (max-width: 720px) {
+.filter-bar { padding: 12px; gap: 12px; }
+.filter-left { align-items: stretch; gap: 10px; }
+#searchInput { width: 100%; min-width: 0; }
+.zoom-slider-container { width: 100%; justify-content: space-between; }
+.zoom-slider { width: min(48vw, 180px); }
+}
 
-.gantt-board-wrapper { background-color: var(--card-color); border: 2px solid var(--border-color);
-border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; display: flex; flex-direction: column; flex-grow: 1; margin-bottom: 16px;
+.gantt-board-wrapper { background-color: var(--card-color); border: 1px solid var(--border-color);
+border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; display: flex; flex-direction: column; flex-grow: 1; margin-bottom: 0; min-height: 0;
 }
 .gantt-legend-panel {
-background-color: #f8fafc;
-border-bottom: 2px solid var(--border-color);
+background-color: #ffffff;
+border-bottom: 1px solid var(--border-color);
 padding: 12px 20px;
 display: flex;
 flex-wrap: wrap;
 gap: 20px;
 align-items: center;
 font-size: 12px;
-font-weight: 800;
+font-weight: 400;
 color: var(--text-sub);
 flex-shrink: 0;
 }
-.legend-title { color: var(--text-main); border-right: 2px solid var(--border-color);
+.legend-title { color: var(--text-main); border-right: 1px solid var(--border-color);
 padding-right: 16px; }
+.gantt-legend-panel .date-badge {
+background-color: #f5f5f7;
+color: var(--text-main);
+border-color: var(--border-color);
+margin-right: 4px;
+font-weight: 600;
+}
+.gantt-legend-panel .pulse-dot {
+background-color: var(--danger);
+animation: none;
+}
 .legend-item { display: flex; align-items: center; gap: 6px;
 }
 .legend-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff;
@@ -176,23 +365,23 @@ background-color: #0d9488; transform: rotate(45deg); border: 1.5px solid #fff; b
 .gantt-fixed-header {
 display: flex;
 height: 48px;
-border-bottom: 2px solid var(--border-color);
-background-color: #f1f5f9;
+border-bottom: 1px solid var(--border-color);
+background-color: #f5f5f7;
 /* 가로로 찌그러지지 않고 독립된 크기를 가지도록 수정 */
 position: relative;
 width: 100%;
 }
 .gantt-fixed-header-label {
-width: 280px;
-min-width: 280px;
+width: var(--gantt-label-width);
+min-width: var(--gantt-label-width);
 flex-shrink: 0;
 display: flex;
 align-items: center;
 padding: 0 16px;
 font-size: 13px;
-font-weight: 900;
-border-right: 2px solid var(--border-color);
-background-color: #f1f5f9;
+font-weight: 600;
+border-right: 1px solid var(--border-color);
+background-color: #f5f5f7;
 /* 스크롤 시 좌측 고정 효과 보완 */
 position: sticky;
 left: 0;
@@ -209,6 +398,13 @@ overflow: visible;
 flex-grow: 1;
 overflow: auto;
 position: relative;
+min-height: 420px;
+}
+@media (max-width: 720px) {
+.gantt-board-wrapper { min-height: 560px; }
+.gantt-outer { min-height: 460px; }
+.gantt-legend-panel { gap: 10px; padding: 10px 12px; }
+.legend-title { width: 100%; border-right: 0; padding-right: 0; }
 }
 
 .gantt-inner {
@@ -228,8 +424,8 @@ background-color: #fff;
 
 /* 좌측 호선 정보: 가로 sticky */
 .gantt-row-label {
-width: 280px;
-min-width: 280px;
+width: var(--gantt-label-width);
+min-width: var(--gantt-label-width);
 position: sticky;
 left: 0;
 z-index: 20;
@@ -250,7 +446,7 @@ height: 104px;
 }
 
 .grid-month-block { position: absolute; height: 100%;
-border-left: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: var(--text-sub); background-color: #f8fafc;
+border-left: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--text-sub); background-color: #f5f5f7;
 }
 .gantt-vertical-gridlines { position: absolute; inset: 0; pointer-events: none; z-index: 5;
 }
@@ -266,53 +462,54 @@ background-color: #ef4444; color: #fff; font-size: 9px; font-weight: 900; paddin
 align-items: center; }
 .gantt-track-row:nth-child(even) { background-color: #fafbfc;
 }
-.active-ship-timeline-bar { position: absolute; height: 6px; background-color: #e2e8f0; border-radius: 10px;
-border: 1px solid #cbd5e1; z-index: 10; top: 50%; transform: translateY(-50%);
+.active-ship-timeline-bar { position: absolute; height: 6px; background-color: #e0e0e0; border-radius: 10px;
+border: 1px solid #d2d2d7; z-index: 10; top: 50%; transform: translateY(-50%);
 }
-.timeline-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; background-color: #93c5fd;
+.timeline-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; background-color: #2997ff;
 border-radius: 10px; opacity: 0.8; }
 .timeline-today-node { position: absolute; width: 12px; height: 12px;
 background-color: var(--danger); border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 4px rgba(239,68,68,0.2); z-index: 30; top: 50%; transform: translate(-50%,-50%);
 }
 
-.milestone-node { position: absolute; display: flex; flex-direction: column; align-items: center; transform: translateX(-50%);
+.milestone-node { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 1px; height: 12px; overflow: visible;
 z-index: 20; cursor: pointer; }
-.milestone-node.node-up { bottom: 8px;
-}
-.milestone-node.node-down { top: 8px;
+.milestone-node.node-up,
+.milestone-node.node-down { top: 50%;
+transform: translate(-50%,-50%);
 }
 .milestone-circle { width: 12px; height: 12px; border-radius: 50%; border: 2.5px solid #fff;
 box-shadow: var(--shadow-sm); background-color: #94a3b8; z-index: 22; }
 .milestone-label { font-size: 10.5px; font-weight: 800;
 color: var(--text-main); white-space: nowrap; display: flex; flex-direction: column; align-items: center; gap: 0; line-height: 1.1;
+position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%);
 }
 .milestone-label span { display: block; line-height: 1.1; margin: 0; padding: 0; }
-.node-up .milestone-label { margin-bottom: 4px; order: -1;
-}
-.node-down .milestone-label { margin-top: 4px; order: 1;
+.node-up .milestone-label,
+.node-down .milestone-label { margin: 0; order: -1;
 }
 .milestone-date-text { font-size: 11px; color: var(--text-sub); font-weight: 700; font-family: monospace;
 }
 
-.m-ld .milestone-circle { background-color: #2563eb;
+.m-ld .milestone-circle { background-color: #0066cc;
 }
-.m-paint .milestone-circle { background-color: #4f46e5;
+.m-paint .milestone-circle { background-color: #0071e3;
 }
-.m-paint-end .milestone-circle { background-color: #7c3aed;
+.m-paint-end .milestone-circle { background-color: #2997ff;
 }
-.m-insul .milestone-circle { background-color: #db2777;
+.m-insul .milestone-circle { background-color: #1d1d1f;
 }
-.m-inspect .milestone-circle { background-color: #ea580c;
+.m-inspect .milestone-circle { background-color: #7a7a7a;
 }
-.m-mount .milestone-circle { background-color: #16a34a;
+.m-mount .milestone-circle { background-color: #168a43;
 }
 
-.milestone-diamond-node { position: absolute; display: flex; flex-direction: column; align-items: center; transform: translateX(-50%);
+.milestone-diamond-node { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 1px; height: 10px; overflow: visible;
 z-index: 19; }
 .milestone-diamond { width: 10px; height: 10px; background-color: #0d9488; transform: rotate(45deg);
 border: 1.5px solid #fff; box-shadow: var(--shadow-sm); }
 .diamond-label { font-size: 9px; font-weight: 800;
 color: #0d9488; margin-top: 4px; white-space: nowrap; text-align: center; line-height: 1.15;
+position: absolute; left: 50%; bottom: 15px; transform: translateX(-50%);
 }
 
 .modal-overlay { position: fixed; inset: 0; background-color: rgba(15,23,42,0.6); backdrop-filter: blur(4px); display: none;
@@ -339,27 +536,26 @@ box-shadow: var(--shadow-lg); font-size: 12px; font-weight: 700; display: flex; 
 }
 .toast-error { background-color: var(--danger);
 }
+.toast-warning { background-color: #b7791f;
+}
 .guide-footer { text-align: center; font-size: 11px; color: var(--text-muted); padding: 16px 0;
 user-select: none; }
-
-.sticky-top-panel {
-display: flex;
-flex-direction: column;
-gap: 16px;
-background-color: var(--bg-color);
-padding: 20px 0 16px 0;
-flex-shrink: 0;
-}
 
 .admin-view { display: none;
 }
 .admin-view.active { display: block;
 }
 
+.ship-list-scroll {
+overflow: auto;
+max-height: 250px;
+}
+
 .ship-list-table { width: 100%;
 border-collapse: collapse; font-size: 13px; }
 .ship-list-table th { background-color: #f1f5f9; padding: 10px 14px;
 text-align: left; font-size: 11px; font-weight: 800; color: var(--text-sub); border-bottom: 2px solid var(--border-color); white-space: nowrap;
+position: sticky; top: 0; z-index: 2;
 }
 .ship-list-table td { padding: 10px 14px; border-bottom: 1px solid var(--border-color); vertical-align: middle;
 }
@@ -374,6 +570,47 @@ text-align: left; font-size: 11px; font-weight: 800; color: var(--text-sub); bor
 .action-cell { display: flex; gap: 6px;
 }
 
+.phase-badge {
+display: inline-flex;
+align-items: center;
+height: 22px;
+padding: 0 10px;
+border-radius: 9999px;
+font-size: 11px;
+font-weight: 600;
+background-color: #f5f5f7;
+color: var(--text-sub);
+border: 1px solid var(--border-color);
+white-space: nowrap;
+}
+.badge-pending { color: #7a7a7a; background-color: #fafafc; }
+.badge-ld,
+.badge-paint,
+.badge-insul,
+.badge-inspect { color: #0066cc; background-color: rgba(0,102,204,0.08); border-color: rgba(0,102,204,0.18); }
+.badge-completed { color: #168a43; background-color: rgba(22,138,67,0.08); border-color: rgba(22,138,67,0.18); }
+
+#searchInput,
+#sortSelect {
+background-color: #ffffff !important;
+border: 1px solid var(--border-color) !important;
+border-radius: 9999px !important;
+color: var(--text-main) !important;
+font-weight: 400 !important;
+}
+
+#searchInput:focus,
+#sortSelect:focus {
+border-color: var(--accent) !important;
+box-shadow: 0 0 0 3px rgba(0,102,204,0.14);
+}
+
+#ganttLabelList {
+width: var(--gantt-label-width) !important;
+min-width: var(--gantt-label-width) !important;
+border-right-width: 1px !important;
+}
+
 .form-section-title { grid-column: 1 / -1;
 font-size: 12px; font-weight: 800; color: var(--text-sub); padding-bottom: 8px; border-bottom: 1px solid var(--border-color); margin-top: 4px;
 }
@@ -385,14 +622,16 @@ font-size: 12px; font-weight: 800; color: var(--text-sub); padding-bottom: 8px; 
 <div class="header-container">
 <div class="logo-title">
 <h1>Pump Tower & L/D Cover</h1>
-<p>공정 관리 스케쥴러</p>
+<p>공정 관리 스케쥴러     copyright 26.6.1 ch.s.Park</p>
 </div>
 <div class="header-controls">
-<div class="date-badge">
-<span class="pulse-dot"></span>
-<span id="currentDateBadge">기준일: 로딩 중...</span>
-</div>
-<button id="adminBtn" class="btn btn-dark" onclick="openPasswordModal()">관리자 모드</button>
+<button id="adminBtn" class="icon-btn" onclick="openPasswordModal()" aria-label="관리자 모드" title="관리자 모드">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<path d="M7 10V8a5 5 0 0 1 10 0v2"></path>
+<rect x="5" y="10" width="14" height="10" rx="2"></rect>
+<path d="M12 14v2"></path>
+</svg>
+</button>
 </div>
 </div>
 </header>
@@ -417,7 +656,7 @@ font-size: 12px; font-weight: 800; color: var(--text-sub); padding-bottom: 8px; 
 <span style="font-size:13px;font-weight:700;color:var(--text-sub);">등록된 호선 목록 — 수정/삭제는 이 화면에서 처리합니다.</span>
 <button onclick="showView('form', 'create')" class="btn btn-accent" style="padding:8px 18px;font-size:13px;">+ 신규 호선 등록</button>
 </div>
-<div style="overflow-x:auto;">
+<div class="ship-list-scroll">
 <table class="ship-list-table">
 <thead>
 <tr>
@@ -443,9 +682,25 @@ font-size: 12px; font-weight: 800; color: var(--text-sub); padding-bottom: 8px; 
 <input type="hidden" id="originalShipId" value="">
 
 <div class="calc-info-banner full-width">
-탑재일정 입력 시 자동계산 &nbsp;|&nbsp;
-L/D 입고 -25일 &nbsp;/&nbsp; 도장입고 -20일 &nbsp;/&nbsp; 도장완료 -14일 &nbsp;/&nbsp; 보온완료 -3일 &nbsp;/&nbsp; 검사일정 -2일
-&nbsp;|&nbsp; PT입고요청일 -1일
+<div class="calc-info-title">
+<span>탑재일정 기준 자동계산 값</span>
+<div class="calc-title-actions">
+<span class="calc-title-note">공정 기준 변경 시에만 수정 후 저장합니다.</span>
+<button type="button" id="calcEditBtn" class="btn btn-light btn-mini" onclick="startCalcOffsetEdit()">기준 수정</button>
+<div class="calc-edit-actions">
+<button type="button" class="btn btn-accent btn-mini" onclick="saveCalcOffsetEdit()">저장</button>
+<button type="button" class="btn btn-light btn-mini" onclick="cancelCalcOffsetEdit()">취소</button>
+</div>
+</div>
+</div>
+<div class="calc-offset-grid">
+<label class="calc-offset-item"><span>L/D 입고</span><input type="number" id="offsetReq" class="calc-offset-input" min="0" max="365" step="1" disabled>일 전</label>
+<label class="calc-offset-item"><span>도장입고</span><input type="number" id="offsetPaint" class="calc-offset-input" min="0" max="365" step="1" disabled>일 전</label>
+<label class="calc-offset-item"><span>도장완료</span><input type="number" id="offsetPaintEnd" class="calc-offset-input" min="0" max="365" step="1" disabled>일 전</label>
+<label class="calc-offset-item"><span>보온완료</span><input type="number" id="offsetInsul" class="calc-offset-input" min="0" max="365" step="1" disabled>일 전</label>
+<label class="calc-offset-item"><span>검사일정</span><input type="number" id="offsetInspect" class="calc-offset-input" min="0" max="365" step="1" disabled>일 전</label>
+<label class="calc-offset-item"><span>PT입고</span><input type="number" id="offsetPt" class="calc-offset-input" min="0" max="365" step="1" disabled>일 전</label>
+</div>
 </div>
 
 <div class="form-group full-width">
@@ -457,27 +712,27 @@ L/D 입고 -25일 &nbsp;/&nbsp; 도장입고 -20일 &nbsp;/&nbsp; 도장완료 -
 <input type="date" id="dateMount" required class="form-control mount-input" oninput="autoCalcDates()">
 </div>
 <div class="form-group">
-<label>2. L/D 입고일 <span class="auto-tag">자동 -25일</span></label>
+<label>2. L/D 입고일 <span class="auto-tag" id="tagReq">자동 -25일</span></label>
 <input type="date" id="dateReq" required class="form-control auto-calc">
 </div>
 <div class="form-group">
-<label>3. 도장공장 입고일 <span class="auto-tag">자동 -20일</span></label>
+<label>3. 도장공장 입고일 <span class="auto-tag" id="tagPaint">자동 -20일</span></label>
 <input type="date" id="datePaint" required class="form-control auto-calc">
 </div>
 <div class="form-group">
-<label>4. 도장완료일정 <span class="auto-tag">자동 -14일</span></label>
+<label>4. 도장완료일정 <span class="auto-tag" id="tagPaintEnd">자동 -14일</span></label>
 <input type="date" id="datePaintEnd" required class="form-control auto-calc">
 </div>
 <div class="form-group">
-<label>5. 보온완료일정 <span class="auto-tag">자동 -3일</span></label>
+<label>5. 보온완료일정 <span class="auto-tag" id="tagInsul">자동 -3일</span></label>
 <input type="date" id="dateInsul" required class="form-control auto-calc">
 </div>
 <div class="form-group">
-<label>6. 검사일정 <span class="auto-tag">자동 -2일</span></label>
+<label>6. 검사일정 <span class="auto-tag" id="tagInspect">자동 -2일</span></label>
 <input type="date" id="dateInspect" required class="form-control auto-calc">
 </div>
 <div class="form-group">
-<label>8. PT입고요청일 <span class="auto-tag">자동 -1일</span></label>
+<label>8. PT입고요청일 <span class="auto-tag" id="tagPt">자동 -1일</span></label>
 <input type="date" id="datePt" required class="form-control auto-calc">
 </div>
 
@@ -489,14 +744,7 @@ L/D 입고 -25일 &nbsp;/&nbsp; 도장입고 -20일 &nbsp;/&nbsp; 도장완료 -
 </div>
 </section>
 
-<div class="sticky-top-panel">
-<section class="stats-grid">
-<div class="stat-card"><div class="stat-label">전체 가동 건수</div><div class="stat-value stat-total" id="statTotal">0</div></div>
-<div class="stat-card"><div class="stat-label">공정 진행</div><div class="stat-value stat-progress" id="statProgress">0</div></div>
-<div class="stat-card"><div class="stat-label">PT탑재 완료</div><div class="stat-value stat-completed" id="statCompleted">0</div></div>
-<div class="stat-card"><div class="stat-label">PT입고 예정</div><div class="stat-value stat-pending" id="statPending">0</div></div>
-</section>
-
+<div class="dashboard-layout">
 <section class="filter-bar">
 <div class="filter-left">
 <input type="text" id="searchInput" oninput="renderDashboard()" placeholder="호선번호 검색..." style="padding:0 16px;height:38px;border:1px solid var(--border-color);border-radius:var(--radius-md);outline:none;font-size:13px;">
@@ -513,19 +761,23 @@ L/D 입고 -25일 &nbsp;/&nbsp; 도장입고 -20일 &nbsp;/&nbsp; 도장완료 -
 <option value="req">L/D 입고 순</option>
 <option value="mount">탑재 완료일 순</option>
 </select>
-<button onclick="restoreDefaultData()" class="btn btn-light" style="padding:8px 12px;height:38px;font-size:11px;">데이터 초기 복원</button>
 </div>
 </section>
-</div>
 
+<div class="chart-workspace">
+<div class="dashboard-main">
 <section class="gantt-board-wrapper">
 <div class="gantt-legend-panel">
 <span class="legend-title">공정 범례</span>
-<div class="legend-item"><span class="legend-dot" style="background-color:#2563eb;"></span><span>L/D 입고</span></div>
-<div class="legend-item"><span class="legend-dot" style="background-color:#4f46e5;"></span><span>도장 입고</span></div>
-<div class="legend-item"><span class="legend-dot" style="background-color:#7c3aed;"></span><span>도장 완료</span></div>
-<div class="legend-item"><span class="legend-dot" style="background-color:#db2777;"></span><span>보온 완료</span></div>
-<div class="legend-item"><span class="legend-dot" style="background-color:#ea580c;"></span><span>검사</span></div>
+<div class="date-badge">
+<span class="pulse-dot"></span>
+<span id="currentDateBadge">TODAY: 로딩 중...</span>
+</div>
+<div class="legend-item"><span class="legend-dot" style="background-color:#0066cc;"></span><span>L/D 입고</span></div>
+<div class="legend-item"><span class="legend-dot" style="background-color:#0071e3;"></span><span>도장 입고</span></div>
+<div class="legend-item"><span class="legend-dot" style="background-color:#2997ff;"></span><span>도장 완료</span></div>
+<div class="legend-item"><span class="legend-dot" style="background-color:#1d1d1f;"></span><span>보온 완료</span></div>
+<div class="legend-item"><span class="legend-dot" style="background-color:#7a7a7a;"></span><span>검사</span></div>
 <div class="legend-item"><span class="legend-dot" style="background-color:#16a34a;"></span><span>탑재</span></div>
 <div class="legend-item"><span class="legend-diamond"></span><span>PT입고요청일</span></div>
 </div>
@@ -553,6 +805,18 @@ L/D 입고 -25일 &nbsp;/&nbsp; 도장입고 -20일 &nbsp;/&nbsp; 도장완료 -
 </div>
 </div>
 </section>
+</div>
+
+<aside class="kpi-rail" aria-label="KPI 요약">
+<section class="stats-grid">
+<div class="stat-card"><div class="stat-label">전체 가동 건수</div><div class="stat-value stat-total" id="statTotal">0</div></div>
+<div class="stat-card"><div class="stat-label">공정 진행</div><div class="stat-value stat-progress" id="statProgress">0</div></div>
+<div class="stat-card"><div class="stat-label">PT탑재 완료</div><div class="stat-value stat-completed" id="statCompleted">0</div></div>
+<div class="stat-card"><div class="stat-label">PT입고 예정</div><div class="stat-value stat-pending" id="statPending">0</div></div>
+</section>
+</aside>
+</div>
+</div>
 </main>
 
 <div id="passwordModal" class="modal-overlay">
@@ -561,7 +825,7 @@ L/D 입고 -25일 &nbsp;/&nbsp; 도장입고 -20일 &nbsp;/&nbsp; 도장완료 -
 <h3>관리자 권한 인증</h3>
 <button onclick="closePasswordModal()" class="modal-close">&times;</button>
 </div>
-<div class="modal-body">관리자 비밀번호를 입력하십시오.<br><strong style="color:var(--text-main);">(비밀번호: 0990)</strong></div>
+<div class="modal-body">관리자 비밀번호를 입력하십시오.</div>
 <input type="password" id="adminPasswordInput" class="form-control" style="text-align:center;font-size:20px;font-family:monospace;margin-bottom:16px;" placeholder="••••" maxlength="4">
 <div style="display:flex;gap:8px;">
 <button onclick="closePasswordModal()" class="btn btn-light" style="flex:1;">취소</button>
@@ -604,10 +868,31 @@ L/D 입고 -25일 &nbsp;/&nbsp; 도장입고 -20일 &nbsp;/&nbsp; 도장완료 -
 
 <script>
 const TODAY = new Date(); // 시스템 날짜 자동 적용
+const ADMIN_PASSWORD_TOKEN = 'MDk5MA==';
 let isAdmin = false;
 let confirmCallback = null;
 
-const CALC_OFFSETS = {
+const ADMIN_LOCK_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true">
+<path d="M7 10V8a5 5 0 0 1 10 0v2"></path>
+<rect x="5" y="10" width="14" height="10" rx="2"></rect>
+<path d="M12 14v2"></path>
+</svg>`;
+const ADMIN_UNLOCK_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true">
+<path d="M7 10V8a5 5 0 0 1 8.6-3.5"></path>
+<rect x="5" y="10" width="14" height="10" rx="2"></rect>
+<path d="M12 14v2"></path>
+</svg>`;
+
+const SHIP_COLOR_PALETTE = [
+{ accent: '#0066cc', rail: '#d8e9ff', tint: '#f5faff', border: '#9dccff' },
+{ accent: '#6f5bd7', rail: '#e6e0ff', tint: '#f8f6ff', border: '#b9adff' },
+{ accent: '#0f8b6f', rail: '#d7f2eb', tint: '#f5fffc', border: '#99d8c9' },
+{ accent: '#c26b00', rail: '#f6e6cf', tint: '#fffaf3', border: '#e8bf82' },
+{ accent: '#c2457a', rail: '#f6d9e5', tint: '#fff6fa', border: '#eba5c2' },
+{ accent: '#57606a', rail: '#e5e7eb', tint: '#fafafa', border: '#b8c0cc' }
+];
+
+const DEFAULT_CALC_OFFSETS = {
 req: 25, // L/D 입고
 paint: 20, // 도장공장 입고
 paintEnd: 14, // 도장 완료
@@ -615,6 +900,17 @@ insul: 3, // 보온 완료
 inspect: 2, // 검사 일정
 pt: 1 // PT입고요청일
 };
+let CALC_OFFSETS = { ...DEFAULT_CALC_OFFSETS };
+let isCalcOffsetEditing = false;
+
+const CALC_OFFSET_FIELDS = [
+{ key: 'req', inputId: 'offsetReq', tagId: 'tagReq' },
+{ key: 'paint', inputId: 'offsetPaint', tagId: 'tagPaint' },
+{ key: 'paintEnd', inputId: 'offsetPaintEnd', tagId: 'tagPaintEnd' },
+{ key: 'insul', inputId: 'offsetInsul', tagId: 'tagInsul' },
+{ key: 'inspect', inputId: 'offsetInspect', tagId: 'tagInspect' },
+{ key: 'pt', inputId: 'offsetPt', tagId: 'tagPt' }
+];
 
 function autoCalcDates() {
 const mountVal = document.getElementById('dateMount').value;
@@ -638,10 +934,10 @@ document.getElementById('datePt').value = subtractDays(CALC_OFFSETS.pt);
 }
 
 const initialMockData = [
-{ ship: "SEAPEAK (SN2657)", dates: { req: "2026-05-01", paint: "2026-05-10", paintEnd: "2026-05-15", insul: "2026-05-20", inspect: "2026-05-25", mount: "2026-06-10", pt: "2026-06-05" } },
-{ ship: "MARAN GAS (SN2658)", dates: { req: "2026-05-15", paint: "2026-05-22", paintEnd: "2026-05-26", insul: "2026-06-01", inspect: "2026-06-05", mount: "2026-06-20", pt: "2026-06-15" } },
-{ ship: "H-LINE LNG (SN2659)", dates: { req: "2026-05-28", paint: "2026-06-02", paintEnd: "2026-06-07", insul: "2026-06-12", inspect: "2026-06-18", mount: "2026-07-02", pt: "2026-06-25" } },
-{ ship: "MITSUI O.S.K. (SN2660)", dates: { req: "2026-04-10", paint: "2026-04-18", paintEnd: "2026-04-23", insul: "2026-04-28", inspect: "2026-05-03", mount: "2026-05-20", pt: "2026-05-14" } }
+{ ship: "SEAPEAK (SN2657)", dates: { req: "2026-05-16", paint: "2026-05-21", paintEnd: "2026-05-27", insul: "2026-06-07", inspect: "2026-06-08", mount: "2026-06-10", pt: "2026-06-09" } },
+{ ship: "MARAN GAS (SN2658)", dates: { req: "2026-05-26", paint: "2026-05-31", paintEnd: "2026-06-06", insul: "2026-06-17", inspect: "2026-06-18", mount: "2026-06-20", pt: "2026-06-19" } },
+{ ship: "H-LINE LNG (SN2659)", dates: { req: "2026-06-07", paint: "2026-06-12", paintEnd: "2026-06-18", insul: "2026-06-29", inspect: "2026-06-30", mount: "2026-07-02", pt: "2026-07-01" } },
+{ ship: "MITSUI O.S.K. (SN2660)", dates: { req: "2026-04-25", paint: "2026-04-30", paintEnd: "2026-05-06", insul: "2026-05-17", inspect: "2026-05-18", mount: "2026-05-20", pt: "2026-05-19" } }
 ];
 
 const StorageManager = {
@@ -653,8 +949,120 @@ getItem(key) { try { if (this.isSupported()) return localStorage.getItem(key); }
 setItem(key, val) { try { if (this.isSupported()) { localStorage.setItem(key, val); return; } } catch(e) {} this.mem[key] = val; }
 };
 
+function normalizeCalcOffsets(value) {
+const result = { ...DEFAULT_CALC_OFFSETS };
+if (value && typeof value === 'object') {
+CALC_OFFSET_FIELDS.forEach(({ key }) => {
+const num = Number(value[key]);
+if (Number.isFinite(num) && num >= 0 && num <= 365) result[key] = Math.round(num);
+});
+}
+return result;
+}
+
+function loadCalcOffsets() {
+try {
+const stored = StorageManager.getItem('pump_tower_calc_offsets');
+if (!stored) return { ...DEFAULT_CALC_OFFSETS };
+return normalizeCalcOffsets(JSON.parse(stored));
+} catch(e) {
+return { ...DEFAULT_CALC_OFFSETS };
+}
+}
+
+function saveCalcOffsets() {
+try { StorageManager.setItem('pump_tower_calc_offsets', JSON.stringify(CALC_OFFSETS)); } catch(e) {}
+}
+
+function refreshCalcOffsetUI() {
+CALC_OFFSET_FIELDS.forEach(({ key, inputId, tagId }) => {
+const days = CALC_OFFSETS[key];
+const input = document.getElementById(inputId);
+const tag = document.getElementById(tagId);
+if (input) {
+input.value = days;
+input.disabled = !isCalcOffsetEditing;
+}
+if (tag) tag.innerText = `자동 -${days}일`;
+});
+const banner = document.querySelector('.calc-info-banner');
+if (banner) banner.classList.toggle('is-editing', isCalcOffsetEditing);
+}
+
+function initializeCalcOffsets() {
+CALC_OFFSETS = loadCalcOffsets();
+isCalcOffsetEditing = false;
+refreshCalcOffsetUI();
+}
+
+function readCalcOffsetsFromInputs() {
+const next = { ...CALC_OFFSETS };
+CALC_OFFSET_FIELDS.forEach(({ key, inputId }) => {
+const input = document.getElementById(inputId);
+const num = Number(input?.value);
+if (Number.isFinite(num)) next[key] = Math.max(0, Math.min(365, Math.round(num)));
+});
+return normalizeCalcOffsets(next);
+}
+
+function startCalcOffsetEdit() {
+isCalcOffsetEditing = true;
+refreshCalcOffsetUI();
+const first = document.getElementById('offsetReq');
+if (first) first.focus();
+}
+
+function cancelCalcOffsetEdit() {
+CALC_OFFSETS = loadCalcOffsets();
+isCalcOffsetEditing = false;
+refreshCalcOffsetUI();
+}
+
+function saveCalcOffsetEdit() {
+CALC_OFFSETS = readCalcOffsetsFromInputs();
+isCalcOffsetEditing = false;
+saveCalcOffsets();
+refreshCalcOffsetUI();
+autoCalcDates();
+showToast("자동계산 기준값을 저장했습니다.", "success");
+}
+
 function getFormattedDate(d) {
 return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function getAdminPassword() {
+try { return atob(ADMIN_PASSWORD_TOKEN); } catch(e) { return ''; }
+}
+
+function isValidDateString(value) {
+return /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(new Date(value).getTime());
+}
+
+function escapeHTML(value) {
+return String(value)
+.replace(/&/g, '&amp;')
+.replace(/</g, '&lt;')
+.replace(/>/g, '&gt;')
+.replace(/"/g, '&quot;')
+.replace(/'/g, '&#39;');
+}
+
+function getShortDate(value) {
+return isValidDateString(value) ? value.substring(5) : '--';
+}
+
+function getShipColor(index) {
+return SHIP_COLOR_PALETTE[index % SHIP_COLOR_PALETTE.length];
+}
+
+function setAdminButtonState(active) {
+const btn = document.getElementById('adminBtn');
+if (!btn) return;
+btn.className = active ? 'icon-btn is-admin' : 'icon-btn';
+btn.innerHTML = active ? ADMIN_UNLOCK_ICON : ADMIN_LOCK_ICON;
+btn.setAttribute('aria-label', active ? '관리자 로그아웃' : '관리자 모드');
+btn.setAttribute('title', active ? '관리자 로그아웃' : '관리자 모드');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -664,7 +1072,8 @@ document.addEventListener('DOMContentLoaded', () => {
 function validateSchema(p) {
 if (!Array.isArray(p)) return false;
 return p.every(item => item && typeof item.ship === 'string' && item.dates &&
-['req','paint','paintEnd','insul','inspect','mount','pt'].every(k => typeof item.dates[k] === 'string'));
+item.ship.trim().length > 0 &&
+['req','paint','paintEnd','insul','inspect','mount','pt'].every(k => isValidDateString(item.dates[k])));
 }
 
 function loadDatabase() {
@@ -683,13 +1092,16 @@ try { StorageManager.setItem('pump_tower_db', JSON.stringify(data)); } catch(e) 
 renderDashboard();
 }
 
-function restoreDefaultData() { saveDatabase(initialMockData); showToast("기본 데이터로 복구되었습니다.", "success"); }
-
 function showToast(msg, type = 'success') {
 const c = document.getElementById('toastContainer');
 const t = document.createElement('div');
-t.className = `toast-item ${type === 'error' ? 'toast-error' : ''}`;
-t.innerHTML = `<span>${type === 'success' ? '✅' : '❌'}</span><span>${msg}</span>`;
+const iconMap = { success: '✓', error: '!', warning: '!' };
+t.className = `toast-item ${type === 'error' ? 'toast-error' : type === 'warning' ? 'toast-warning' : ''}`;
+const icon = document.createElement('span');
+icon.textContent = iconMap[type] || iconMap.success;
+const text = document.createElement('span');
+text.textContent = msg;
+t.append(icon, text);
 c.appendChild(t);
 setTimeout(() => t.classList.add('active'), 50);
 setTimeout(() => { t.classList.remove('active'); setTimeout(() => t.remove(), 300); }, 3000);
@@ -717,8 +1129,7 @@ document.getElementById('confirmOkBtn').onclick = () => { if (confirmCallback) c
 function logout() {
 isAdmin = false;
 document.getElementById('adminConsole').style.display = 'none';
-const btn = document.getElementById('adminBtn');
-btn.className = "btn btn-dark"; btn.innerText = "관리자 모드";
+setAdminButtonState(false);
 document.getElementById('shipForm').reset();
 document.getElementById('formMode').value = "create";
 document.getElementById('originalShipId').value = "";
@@ -753,10 +1164,12 @@ document.getElementById('formMode').value = "create";
 document.getElementById('originalShipId').value = "";
 document.getElementById('submitBtn').innerText = "호선 신규등록";
 document.getElementById('shipForm').reset();
+initializeCalcOffsets();
 } else {
 document.getElementById('adminConsoleTitle').innerText = '호선 일정 수정';
 document.getElementById('adminConsoleSubtitle').innerText = '수정 후 저장하면 즉시 반영됩니다.';
 document.getElementById('submitBtn').innerText = "수정 저장";
+initializeCalcOffsets();
 }
 }
 document.getElementById('adminConsole').scrollIntoView({ behavior: 'smooth' });
@@ -766,38 +1179,65 @@ function renderShipList() {
 const db = loadDatabase();
 const tbody = document.getElementById('shipListBody');
 if (!tbody) return;
+tbody.innerHTML = '';
 if (db.length === 0) {
 tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px;">등록된 호선이 없습니다.</td></tr>`;
 return;
 }
-tbody.innerHTML = db.map(item => `
-<tr>
-<td class="ship-name-cell">${item.ship}</td>
-<td class="date-cell">${item.dates.req.substring(5)}</td>
-<td class="date-cell">${item.dates.paint.substring(5)}</td>
-<td class="date-cell">${item.dates.paintEnd.substring(5)}</td>
-<td class="date-cell">${item.dates.insul.substring(5)}</td>
-<td class="date-cell">${item.dates.inspect.substring(5)}</td>
-<td class="date-cell" style="font-weight:800;color:var(--text-main);">${item.dates.mount.substring(5)}</td>
-<td class="date-cell" style="color:#0d9488;">${item.dates.pt.substring(5)}</td>
-<td>
-<div class="action-cell">
-<button class="btn btn-light" style="padding:4px 10px;font-size:11px;" onclick="editShip('${item.ship.replace(/'/g, "\\'")}')">수정</button>
-<button class="btn btn-danger" style="padding:4px 10px;font-size:11px;" onclick="deleteShip('${item.ship.replace(/'/g, "\\'")}')">삭제</button>
-</div>
-</td>
-</tr>
-`).join('');
+db.forEach(item => {
+const tr = document.createElement('tr');
+const shipCell = document.createElement('td');
+shipCell.className = 'ship-name-cell';
+shipCell.textContent = item.ship;
+tr.appendChild(shipCell);
+
+['req','paint','paintEnd','insul','inspect'].forEach(key => {
+const td = document.createElement('td');
+td.className = 'date-cell';
+td.textContent = getShortDate(item.dates[key]);
+tr.appendChild(td);
+});
+
+const mountCell = document.createElement('td');
+mountCell.className = 'date-cell';
+mountCell.style.fontWeight = '800';
+mountCell.style.color = 'var(--text-main)';
+mountCell.textContent = getShortDate(item.dates.mount);
+tr.appendChild(mountCell);
+
+const ptCell = document.createElement('td');
+ptCell.className = 'date-cell';
+ptCell.style.color = '#0d9488';
+ptCell.textContent = getShortDate(item.dates.pt);
+tr.appendChild(ptCell);
+
+const actionCell = document.createElement('td');
+const actionWrap = document.createElement('div');
+actionWrap.className = 'action-cell';
+const editBtn = document.createElement('button');
+editBtn.className = 'btn btn-light';
+editBtn.style.cssText = 'padding:4px 10px;font-size:11px;';
+editBtn.textContent = '수정';
+editBtn.addEventListener('click', () => editShip(item.ship));
+const deleteBtn = document.createElement('button');
+deleteBtn.className = 'btn btn-danger';
+deleteBtn.style.cssText = 'padding:4px 10px;font-size:11px;';
+deleteBtn.textContent = '삭제';
+deleteBtn.addEventListener('click', () => deleteShip(item.ship));
+actionWrap.append(editBtn, deleteBtn);
+actionCell.appendChild(actionWrap);
+tr.appendChild(actionCell);
+tbody.appendChild(tr);
+});
 }
 
 function closePasswordModal() { document.getElementById('passwordModal').style.display = 'none'; }
 
 function submitAdminPassword() {
-if (document.getElementById('adminPasswordInput').value.trim() === "0990") {
+if (document.getElementById('adminPasswordInput').value.trim() === getAdminPassword()) {
 isAdmin = true;
 document.getElementById('adminConsole').style.display = 'block';
-const btn = document.getElementById('adminBtn');
-btn.className = "btn btn-danger"; btn.innerText = "로그아웃";
+setAdminButtonState(true);
 closePasswordModal();
 showView('list');
 renderDashboard();
@@ -937,7 +1377,8 @@ todayLine.style.left = `${todayPct}%`;
 todayLine.style.display = 'block';
 }
 
-filtered.forEach(item => {
+filtered.forEach((item, index) => {
+const shipColor = getShipColor(index);
 const phase = determineCurrentPhase(item);
 const shipStart = new Date(item.dates.req).getTime();
 const shipEnd = new Date(item.dates.mount).getTime();
@@ -954,47 +1395,47 @@ const pInspect = ((new Date(item.dates.inspect).getTime()-shipStart)/shipDur)*10
 const pPt = ((new Date(item.dates.pt).getTime()-shipStart)/shipDur)*100;
 
 const labelDiv = document.createElement('div');
-labelDiv.style.cssText = 'height:104px;border-bottom:1px solid var(--border-color);padding:12px 16px;display:flex;flex-direction:column;justify-content:center;background:inherit;';
+labelDiv.style.cssText = `height:104px;border-bottom:1px solid var(--border-color);border-left:4px solid ${shipColor.accent};padding:12px 16px 12px 12px;display:flex;flex-direction:column;justify-content:center;background:${shipColor.tint};`;
 labelDiv.innerHTML = `
-<div><span class="phase-badge ${phase.className}">${phase.text}</span></div>
-<div style="margin-top:2px;font-size:13px;font-weight:800;line-height:1.2;">${item.ship}</div>
-<div style="font-size:10px;margin-top:2px;">L/C: ${item.dates.req.substring(2)} ~ ${item.dates.mount.substring(5)}</div>
+<div><span class="phase-badge ${phase.className}" style="border-color:${shipColor.border};">${phase.text}</span></div>
+<div style="margin-top:2px;font-size:13px;font-weight:600;line-height:1.2;">${escapeHTML(item.ship)}</div>
+<div style="font-size:10px;margin-top:2px;color:${shipColor.accent};">L/C: ${escapeHTML(isValidDateString(item.dates.req) ? item.dates.req.substring(2) : '--')} ~ ${escapeHTML(getShortDate(item.dates.mount))}</div>
 `;
 if (labelList) labelList.appendChild(labelDiv);
 
 const trackDiv = document.createElement('div');
 trackDiv.style.cssText = 'height:104px;border-bottom:1px solid var(--border-color);position:relative;';
 trackDiv.innerHTML = `
-<div class="active-ship-timeline-bar" style="left:${sl}%;width:${sw}%;">
-<div class="timeline-progress-fill" style="width:${prog}%;"></div>
+<div class="active-ship-timeline-bar" style="left:${sl}%;width:${sw}%;background:${shipColor.rail};border-color:${shipColor.border};">
+<div class="timeline-progress-fill" style="width:${prog}%;background:${shipColor.accent};"></div>
 ${todayTime >= shipStart && todayTime <= shipEnd ? `<div class="timeline-today-node" style="left:${prog}%;"></div>` : ''}
 <div class="milestone-node m-ld node-up" style="left:0%;">
 <div class="milestone-circle"></div>
-<div class="milestone-label"><span>L/D 입고</span><span class="milestone-date-text">${item.dates.req.substring(5)}</span></div>
+<div class="milestone-label"><span>L/D 입고</span><span class="milestone-date-text">${getShortDate(item.dates.req)}</span></div>
 </div>
 <div class="milestone-node m-paint node-down" style="left:${pPaint}%;">
 <div class="milestone-circle"></div>
-<div class="milestone-label"><span>도장공장</span><span class="milestone-date-text">${item.dates.paint.substring(5)}</span></div>
+<div class="milestone-label"><span>도장공장</span><span class="milestone-date-text">${getShortDate(item.dates.paint)}</span></div>
 </div>
 <div class="milestone-node m-paint-end node-up" style="left:${pPaintEnd}%;">
 <div class="milestone-circle"></div>
-<div class="milestone-label"><span>도장완료</span><span class="milestone-date-text">${item.dates.paintEnd.substring(5)}</span></div>
+<div class="milestone-label"><span>도장완료</span><span class="milestone-date-text">${getShortDate(item.dates.paintEnd)}</span></div>
 </div>
 <div class="milestone-node m-insul node-down" style="left:${pInsul}%;">
 <div class="milestone-circle"></div>
-<div class="milestone-label"><span>보온완료</span><span class="milestone-date-text">${item.dates.insul.substring(5)}</span></div>
+<div class="milestone-label"><span>보온완료</span><span class="milestone-date-text">${getShortDate(item.dates.insul)}</span></div>
 </div>
 <div class="milestone-node m-inspect node-up" style="left:${pInspect}%;">
 <div class="milestone-circle"></div>
-<div class="milestone-label"><span>검사</span><span class="milestone-date-text">${item.dates.inspect.substring(5)}</span></div>
+<div class="milestone-label"><span>검사</span><span class="milestone-date-text">${getShortDate(item.dates.inspect)}</span></div>
 </div>
 <div class="milestone-node m-mount node-down" style="left:100%;">
 <div class="milestone-circle"></div>
-<div class="milestone-label"><span>탑재</span><span class="milestone-date-text">${item.dates.mount.substring(5)}</span></div>
+<div class="milestone-label"><span>탑재</span><span class="milestone-date-text">${getShortDate(item.dates.mount)}</span></div>
 </div>
 <div class="milestone-diamond-node" style="left:${pPt}%;top:50%;transform:translateX(-50%) translateY(-50%)">
 <div class="milestone-diamond"></div>
-<div class="diamond-label">PT입고<br>(${item.dates.pt.substring(5)})</div>
+<div class="diamond-label">PT입고<br>(${getShortDate(item.dates.pt)})</div>
 </div>
 </div>
 `;
@@ -1018,6 +1459,14 @@ mount: document.getElementById('dateMount').value,
 pt: document.getElementById('datePt').value
 }
 };
+if (!payload.ship) {
+showToast("호선명을 입력해 주십시오.", "error");
+return;
+}
+if (!validateSchema([payload])) {
+showToast("날짜 형식을 확인해 주십시오.", "error");
+return;
+}
 if (new Date(payload.dates.req) >= new Date(payload.dates.mount)) {
 showToast("L/D 입고일은 탑재일보다 빨라야 합니다.", "error");
 return;
@@ -1029,10 +1478,13 @@ showToast("동일한 호선번호가 이미 등록되어 있습니다.", "error"
 return;
 }
 db.push(payload);
-showToast(`[${payload.ship}] 신규 등록 완료!`);
 } else {
 const idx = db.findIndex(item => item.ship === document.getElementById('originalShipId').value);
-if (idx !== -1) { db[idx] = payload; showToast(`[${payload.ship}] 수정 완료.`); }
+if (idx === -1) {
+showToast("수정할 호선을 찾지 못했습니다.", "error");
+return;
+}
+db[idx] = payload;
 }
 saveDatabase(db);
 showToast(mode === 'create' ? `[${payload.ship}] 등록이 완료되었습니다.` : `[${payload.ship}] 수정이 완료되었습니다.`, 'success');
@@ -1103,8 +1555,9 @@ event.target.value = '';
 }
 
 window.onload = () => {
+initializeCalcOffsets();
 const b = document.getElementById('currentDateBadge');
-if (b) b.innerText = `기준일: ${getFormattedDate(TODAY)}`;
+if (b) b.innerText = `TODAY: ${getFormattedDate(TODAY)}`;
 
 // 초기 배율(2400px) 값을 헤더 요소들에도 적용
 const val = document.getElementById('zoomScale').value;
